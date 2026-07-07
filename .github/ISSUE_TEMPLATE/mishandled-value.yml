@@ -1,0 +1,24 @@
+name: Mishandled serialized value
+description: A serialized value the tool parsed, replaced, or repaired incorrectly.
+title: "[value]: "
+labels: ["parser"]
+body:
+  - type: textarea
+    id: value
+    attributes:
+      label: Serialized value
+      description: The smallest sample that reproduces the problem.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Where did it come from?
+      placeholder: e.g. a wp_options row from a page builder plugin

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WP Serial Fix: safe search and replace for WordPress serialized data</title>
+  <meta name="description" content="Change URLs and domains in WordPress serialized data without breaking it, and repair data a bad SQL replace already corrupted. Runs entirely in your browser.">
+  <link rel="canonical" href="https://jaydenyoonzk.github.io/wp-serial-fix/">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d0c0a'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-size='30' font-family='monospace' fill='%23abcf37'%3E s:%3C/text%3E%3C/svg%3E">
+  <meta property="og:title" content="WP Serial Fix: safe search and replace for WordPress serialized data">
+  <meta property="og:description" content="Change URLs and domains in WordPress serialized data without breaking it, and repair already-corrupted data. Nothing leaves your browser.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://jaydenyoonzk.github.io/wp-serial-fix/">
+  <meta property="og:image" content="https://jaydenyoonzk.github.io/wp-serial-fix/assets/preview.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://jaydenyoonzk.github.io/wp-serial-fix/assets/preview.png">
+  <script>
+    (function () {
+      var t = new URLSearchParams(location.search).get("theme") || localStorage.getItem("theme");
+      if (t !== "light" && t !== "dark") t = matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+      document.documentElement.dataset.theme = t;
+    })();
+  </script>
+  <link rel="stylesheet" href="styles.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "WP Serial Fix",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Any (browser-based)",
+    "url": "https://jaydenyoonzk.github.io/wp-serial-fix/",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "author": { "@type": "Person", "name": "Jayden Yoon ZK", "url": "https://github.com/JaydenYoonZK" }
+  }
+  </script>
+</head>
+<body>
+
+<div class="bg-scene" aria-hidden="true">
+  <div class="orb orb-a"></div>
+  <div class="orb orb-b"></div>
+  <div class="star-layer sl-far">
+    <span class="star" style="left:12%;top:18%;animation-delay:-1.4s"></span>
+    <span class="star" style="left:38%;top:8%;animation-delay:-3.8s;animation-duration:8.6s"></span>
+    <span class="star" style="left:63%;top:14%;animation-delay:-5.6s"></span>
+    <span class="star" style="left:87%;top:22%;animation-delay:-2.3s;animation-duration:9.2s"></span>
+    <span class="star" style="left:22%;top:60%;animation-delay:-6.7s"></span>
+    <span class="star" style="left:74%;top:70%;animation-delay:-0.9s;animation-duration:8s"></span>
+  </div>
+  <div class="star-layer sl-mid">
+    <span class="star" style="left:8%;top:34%;animation-delay:-4.5s"></span>
+    <span class="star" style="left:47%;top:24%;animation-delay:-3.1s;animation-duration:7.8s"></span>
+    <span class="star" style="left:92%;top:47%;animation-delay:-1.8s"></span>
+    <span class="star" style="left:30%;top:86%;animation-delay:-5.9s;animation-duration:8.8s"></span>
+    <span class="star" style="left:61%;top:94%;animation-delay:-2.7s"></span>
+  </div>
+  <div class="star-layer sl-near">
+    <span class="star" style="left:5%;top:52%;animation-delay:-3.4s;animation-duration:7.4s"></span>
+    <span class="star" style="left:95%;top:31%;animation-delay:-6.2s"></span>
+    <span class="star" style="left:17%;top:116%;animation-delay:-1.2s;animation-duration:8.2s"></span>
+    <span class="star" style="left:84%;top:128%;animation-delay:-4.9s"></span>
+  </div>
+  <div class="shape cube3d p1"><div class="dx"><div class="dy"><div class="inner"><div class="f"></div><div class="f"></div><div class="f"></div><div class="f"></div><div class="f"></div><div class="f"></div></div></div></div></div>
+  <div class="shape cube3d p2"><div class="dx"><div class="dy"><div class="inner"><div class="f"></div><div class="f"></div><div class="f"></div><div class="f"></div><div class="f"></div><div class="f"></div></div></div></div></div>
+  <div class="shape cube3d p3"><div class="dx"><div class="dy"><div class="inner"><div class="f"></div><div class="f"></div><div class="f"></div><div class="f"></div><div class="f"></div><div class="f"></div></div></div></div></div>
+  <div class="shape sph p4"><div class="dx"><div class="dy"><div class="inner"></div></div></div></div>
+  <div class="shape sph p5"><div class="dx"><div class="dy"><div class="inner"></div></div></div></div>
+  <div class="shape cube3d p6"><div class="dx"><div class="dy"><div class="inner"><div class="f"></div><div class="f"></div><div class="f"></div><div class="f"></div><div class="f"></div><div class="f"></div></div></div></div></div>
+  <div class="shape sph p7"><div class="dx"><div class="dy"><div class="inner"></div></div></div></div>
+  <div class="shape sph p10"><div class="dx"><div class="dy"><div class="inner"></div></div></div></div>
+  <div class="shape sph p11"><div class="dx"><div class="dy"><div class="inner"></div></div></div></div>
+  <div class="shape cube3d p8"><div class="dx"><div class="dy"><div class="inner"><div class="f"></div><div class="f"></div><div class="f"></div><div class="f"></div><div class="f"></div><div class="f"></div></div></div></div></div>
+  <div class="shape cube3d p9"><div class="dx"><div class="dy"><div class="inner"><div class="f"></div><div class="f"></div><div class="f"></div><div class="f"></div><div class="f"></div><div class="f"></div></div></div></div></div>
+</div>
+
+<nav class="site-nav" aria-label="Page navigation">
+  <div class="wrap">
+    <a class="brand" href="#top">Jayden Yoon ZK</a>
+    <div class="nav-links">
+      <a href="#the-bug">The bug</a>
+      <a href="#how">How it works</a>
+      <a href="#repair">Repair mode</a>
+      <a href="#workflow">Migration steps</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle light and dark mode">☀️</button>
+  </div>
+</nav>
+
+<header id="top">
+  <div class="wrap header-grid">
+    <div class="header-copy">
+    <p class="eyebrow">WP Serial Fix</p>
+    <h1>Change WordPress URLs without breaking your site.</h1>
+    <p class="lede">A raw SQL find-and-replace on a WordPress database looks like it worked, then widgets, theme settings, and page builder layouts quietly disappear. The culprit is PHP serialization: it records the length of every string, and your replacement changed the text but not the number. Paste the value here and replace it the safe way, or repair data a bad replace already corrupted.</p>
+    <p class="privacy"><span class="dot"></span> 🔒 Everything runs in your browser. Your data is never uploaded.</p>
+    </div>
+    <div class="hero-art" aria-hidden="true">
+<svg viewBox="0 0 320 270" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <defs><radialGradient id="hg" cx="0.2" cy="0" r="1"><stop offset="0" stop-color="#abcf37" stop-opacity="0.1"/><stop offset="1" stop-color="#abcf37" stop-opacity="0"/></radialGradient></defs>
+  <rect x="4" y="4" width="312" height="262" rx="24" fill="#16140f" stroke="#ffffff" stroke-opacity="0.12"/>
+  <rect x="4" y="4" width="312" height="262" rx="24" fill="url(#hg)"/>
+  <circle cx="28" cy="28" r="4" fill="#ffffff" fill-opacity="0.14"/><circle cx="43" cy="28" r="4" fill="#ffffff" fill-opacity="0.14"/><circle cx="58" cy="28" r="4" fill="#ffffff" fill-opacity="0.14"/>
+  <path d="M4 48H316" stroke="#ffffff" stroke-opacity="0.08"/>
+  <text x="28" y="88" font-family="ui-monospace, Menlo, monospace" font-size="15" fill="#8f887c">s:<tspan fill="#ff7a6e">16</tspan>:"/new-page";</text>
+  <g><rect x="222" y="74" width="62" height="22" rx="7" fill="#ff7a6e" fill-opacity="0.13" stroke="#ff7a6e" stroke-opacity="0.55"/><text x="253" y="89" text-anchor="middle" fill="#ff7a6e" font-family="ui-monospace, Menlo, monospace" font-size="10" font-weight="700">BREAKS</text>
+    <animate attributeName="opacity" values="1;0.3;1" dur="3s" repeatCount="indefinite"/></g>
+  <path d="M148 116l18 18m0-18l-18 18" stroke="#544741" stroke-width="2.5" stroke-linecap="round" opacity="0.55"/>
+  <path d="M28 156H292" stroke="#ffffff" stroke-opacity="0.07"/>
+  <text x="28" y="188" font-family="ui-monospace, Menlo, monospace" font-size="15" fill="#c8c2b6">s:<tspan fill="#abcf37">9</tspan>:"/new-page";</text>
+  <g><rect x="230" y="174" width="54" height="22" rx="7" fill="#a7e26a" fill-opacity="0.14" stroke="#a7e26a" stroke-opacity="0.5"/><text x="257" y="189" text-anchor="middle" fill="#a7e26a" font-family="ui-monospace, Menlo, monospace" font-size="10" font-weight="700">VALID</text>
+    <animate attributeName="opacity" values="1;0.55;1" dur="3s" begin="0.6s" repeatCount="indefinite"/></g>
+  <g><circle cx="60" cy="230" r="19" stroke="#abcf37" stroke-width="3" fill="#abcf37" fill-opacity="0.06"/><path d="M52 230l6 6l10-12" stroke="#abcf37" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <animate attributeName="opacity" values="1;0.7;1" dur="4s" repeatCount="indefinite"/></g>
+  <text x="90" y="235" fill="#8f887c" font-size="12" font-family="ui-sans-serif, system-ui, sans-serif">length recalculated</text>
+</svg>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="card">
+    <label for="input" style="display:none">Serialized data or text</label>
+    <textarea id="input" placeholder="Paste a serialized value, a wp_options row, or any text (for example: a:2:{s:4:&quot;home&quot;;s:19:&quot;http://old.example&quot;;...})" spellcheck="false" style="min-height:150px; font-family: var(--mono); font-size: 0.9rem;"></textarea>
+    <div class="policy-modes" style="margin-top:14px">
+      <label><input type="radio" name="mode" value="replace" checked> Search &amp; replace</label>
+      <label><input type="radio" name="mode" value="repair"> Repair broken data</label>
+    </div>
+    <div id="replace-fields" class="find-replace">
+      <input id="find" type="text" placeholder="Find (for example: http://old.example)" spellcheck="false">
+      <input id="replace" type="text" placeholder="Replace with (for example: https://new.example)" spellcheck="false">
+      <label class="regex-opt"><input id="regex" type="checkbox"> regex</label>
+    </div>
+    <div class="toolbar">
+      <button id="run" class="primary" type="button">Process</button>
+      <button id="paste" type="button">Paste &amp; process</button>
+      <button id="sample" type="button">Try a sample</button>
+      <button id="clear" type="button">Clear</button>
+    </div>
+  </div>
+
+  <div id="results" hidden>
+    <div class="stats" id="summary" role="status"></div>
+    <div id="blocks"></div>
+  </div>
+
+  <div class="prose">
+    <h2 id="the-bug">🧩 The bug that eats WordPress migrations</h2>
+    <p>WordPress stores structured settings (widget layouts, theme options, page builder content) as PHP serialized strings. A serialized string looks like this:</p>
+    <pre class="snippet">s:19:"http://old.example";</pre>
+    <p>The <code>19</code> is the exact byte length of the text between the quotes. Now imagine you move the site and run a database-wide find and replace, <code>http://old.example</code> becomes <code>https://new.longer.example</code>. The text changes, the number does not:</p>
+    <pre class="snippet">s:19:"https://new.longer.example";   ← length says 19, text is 26</pre>
+    <p>PHP reads exactly 19 bytes, hits garbage where it expected a closing quote, and gives up. WordPress calls <code>unserialize()</code>, gets <code>false</code> back, and treats the option as empty. Your widgets vanish. The site does not error; it just quietly forgets things. This is the single most common way a WordPress migration goes wrong.</p>
+
+    <h2 id="how">🔧 How the safe replace works</h2>
+    <p>This tool does what WP-CLI does under the hood, except in your browser with no database connection. It parses the serialized value into its real structure, performs the replacement inside each string, and re-emits the data with every length prefix recomputed from the actual byte length. Multibyte characters are counted correctly (an accented letter is two bytes, an emoji is four), and it descends into serialized data nested inside other serialized data, which WordPress does constantly.</p>
+    <p>Paste a bare value or a whole column of them (one per line). Plain, non-serialized text is replaced normally and labeled as such, so you can run mixed content through in one pass.</p>
+
+    <h2 id="repair">🩹 Repair mode, for when it already broke</h2>
+    <p>If you already ran a bad replace and the damage is done, repair mode is the undo you wish you had. It scans for string prefixes whose numbers no longer match their contents and rewrites each number to the correct byte length, carefully handling the tricky case where the text itself contains a quote followed by a semicolon. Paste the corrupted value, get valid serialized data back. It cannot invent data that was truncated and lost, but a length-prefix mismatch from a naive replace is fully recoverable.</p>
+
+    <h2 id="workflow">🗺️ The safer migration, start to finish</h2>
+    <ol>
+      <li>Back up the database first. Always. This tool helps with values, not with backups.</li>
+      <li>Export the tables, or copy the specific <code>wp_options</code> / <code>wp_postmeta</code> values you need to change.</li>
+      <li>Run the old to new replacement here in search and replace mode.</li>
+      <li>Paste the corrected values back, or import the corrected export.</li>
+      <li>If you are cleaning up after a replace that already ran, use repair mode on the affected values.</li>
+    </ol>
+    <p>For a whole live database at once, the command-line <code>wp search-replace</code> is still the right tool. This page is for the common middle ground: a handful of values, a single stubborn option, a page builder layout, or a cleanup, without setting up WP-CLI or trusting a value to a website you do not control.</p>
+
+    <h2 id="faq">💬 Questions people ask</h2>
+    <h3>Is my data uploaded anywhere?</h3>
+    <p>No. Parsing, replacing, and repairing all happen in your browser with JavaScript. There are no network requests after the page loads, which matters when the value you are pasting came out of a production database. You can read the small, dependency-free <a href="https://github.com/JaydenYoonZK/wp-serial-fix/blob/main/docs/serial.js">engine</a> to confirm it.</p>
+    <h3>Does it handle objects and nested arrays?</h3>
+    <p>Yes. Arrays, objects (including the class name length), nested structures, and serialized-inside-serialized strings are all handled. Every string length is recomputed on output.</p>
+    <h3>What about the whole database at once?</h3>
+    <p>For a full database, use <code>wp search-replace "old" "new"</code> from WP-CLI, which streams every table safely. This tool is for values you have in hand, and for repairs.</p>
+    <h3>Can I use the engine in my own project?</h3>
+    <p>Yes. <code>docs/serial.js</code> is a dependency-free ES module: <code>parse</code>, <code>serialize</code>, <code>isSerialized</code>, <code>strictReplace</code>, and <code>repair</code>. MIT licensed.</p>
+
+    <h2>🌱 Why I built this</h2>
+    <p>Every developer who has moved a WordPress site has been burned by this at least once, usually at the worst possible moment, staring at a homepage that lost its widgets with no error to explain why. The fix is well understood but the tools all assume a server and a database connection. This is the version I wanted: paste the value, get it back correct, move on.</p>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Built by <a href="https://github.com/JaydenYoonZK">Jayden Yoon ZK</a></span>
+    <a href="https://github.com/JaydenYoonZK/wp-serial-fix">Source on GitHub</a>
+    <a href="https://github.com/JaydenYoonZK/wp-serial-fix/issues">Report an issue</a>
+    <a href="https://jaydenyoonzk.github.io/wp-config-doctor/">WP Config Doctor</a>
+    <a href="https://jaydenyoonzk.github.io/wp-plugin-checkup/">WP Plugin Checkup</a>
+    <span>MIT License</span>
+  </div>
+</footer>
+
+<button id="to-top" class="to-top" type="button" aria-label="Back to top">&#8593;</button>
+<script type="module" src="app.js"></script>
+</body>
+</html>
