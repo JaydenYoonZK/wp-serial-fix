@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
-- The hero illustration's broken-row marker is now a red circled X, matching the green circled check on the fixed row.
+- The hero illustration is now a symmetric before-and-after: matched status icons lead each row, a green arrow carries the transformation, and the caption anchors the bottom.
 
 ## [1.0.1] - 2026-07-07
 
