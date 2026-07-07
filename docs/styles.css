@@ -28,10 +28,11 @@
 
 * { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; overflow-x: clip; }
 
 body {
   margin: 0;
+  overflow-x: clip;
   background: var(--bg);
   background-image: radial-gradient(1100px 500px at 15% -5%, rgba(171, 207, 55, 0.07), transparent 60%);
   color: var(--ink);
@@ -313,6 +314,7 @@ button.primary:hover { background: #bcdf4e; }
 .prose h3 { margin: 30px 0 8px; font-size: 1.08rem; font-weight: 750; }
 .prose p, .prose li { color: var(--ink-soft); max-width: 68ch; }
 .prose code {
+  overflow-wrap: anywhere;
   font-family: var(--mono);
   font-size: 0.88em;
   background: var(--panel-2);
@@ -453,6 +455,8 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 /* Tables scroll in place on narrow screens instead of widening the page */
 @media (max-width: 700px) {
   .prose table, .results-table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  pre.snippet { white-space: pre-wrap; word-break: break-word; }
+  .results-table { width: 100%; }
 }
 
 
@@ -669,3 +673,10 @@ html[data-theme="light"] .sph .inner {
 .sblock-body .copy-one { position: absolute; top: 10px; right: 10px; font-size: 0.8rem; padding: 6px 12px; }
 .mark { color: var(--accent); font-weight: 700; }
 .mark-old { color: var(--red); text-decoration: line-through; opacity: 0.7; }
+
+/* Status badges (this stylesheet predates the shared verdict styles) */
+.verdict { display: inline-block; padding: 3px 12px; border-radius: 999px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.03em; white-space: nowrap; }
+.verdict.ok { background: var(--green-soft); color: var(--green); border: 1px solid rgba(167,226,106,0.45); }
+.verdict.warn { background: var(--amber-soft); color: var(--amber); border: 1px solid rgba(255,198,92,0.5); }
+.verdict.phantom { background: var(--red-soft); color: var(--red); border: 1px solid rgba(255,122,110,0.5); }
+.verdict.default { background: var(--panel-2); color: var(--ink-soft); border: 1px solid var(--line-strong); }
