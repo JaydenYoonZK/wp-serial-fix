@@ -144,3 +144,14 @@ test("handles custom-serialized objects (C:) without touching their payload", ()
   assert.equal(parse(out).items[0][1].v, "new");
   assert.ok(out.includes(`{${payload}}`), "custom payload is left untouched");
 });
+
+test("scalar values are validated, so junk is not read as serialized", () => {
+  assert.equal(isSerialized("i:notanumber;"), false);
+  assert.equal(isSerialized("b:5;"), false);
+  assert.equal(isSerialized("d:abc;"), false);
+  assert.equal(isSerialized("i:;"), false);
+  // Real PHP scalar forms, including the special doubles, still parse.
+  for (const s of ["i:0;", "i:-42;", "b:0;", "b:1;", "d:3.14;", "d:1.0E+20;", "d:INF;", "d:-INF;", "d:NAN;"]) {
+    assert.equal(isSerialized(s), true, `${s} should be valid`);
+  }
+});

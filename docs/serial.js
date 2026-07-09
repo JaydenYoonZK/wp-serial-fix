@@ -42,8 +42,19 @@ function parseNode(str, ctx) {
     const end = str.indexOf(";", ctx.i + 2);
     if (end === -1) throw new ParseError(`unterminated scalar at ${ctx.i}`);
     const raw = str.slice(ctx.i + 2, end);
+    // Validate the value's shape so malformed data (e.g. i:notanumber;) is not
+    // mistaken for valid serialized data. PHP only ever emits these exact forms:
+    // bool is 0 or 1, int is an optional-sign integer, double is a number or one
+    // of INF, -INF, NAN. Accepting junk here would make isSerialized() lie, and
+    // could flip the "paste a column of values" flow into the wrong mode.
+    const kind = t === "b" ? "bool" : t === "i" ? "int" : "double";
+    const valid =
+      t === "b" ? (raw === "0" || raw === "1")
+      : t === "i" ? /^-?\d+$/.test(raw)
+      : (raw === "INF" || raw === "-INF" || raw === "NAN" || (raw !== "" && Number.isFinite(Number(raw))));
+    if (!valid) throw new ParseError(`bad ${kind} value at ${ctx.i}`);
     ctx.i = end + 1;
-    return { type: t === "b" ? "bool" : t === "i" ? "int" : "double", raw };
+    return { type: kind, raw };
   }
 
   if (t === "s") {

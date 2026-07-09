@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Everything runs in the browser; the page never makes a network request.
+       connect-src 'none' enforces that, so pasted database values cannot leave. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'">
   <title>WP Serial Fix: safe search and replace for WordPress serialized data</title>
   <meta name="description" content="Change URLs and domains in WordPress serialized data without breaking it, and repair data a bad SQL replace already corrupted. Runs entirely in your browser.">
   <link rel="canonical" href="https://jaydenyoonzk.github.io/wp-serial-fix/">
@@ -21,7 +24,7 @@
       document.documentElement.dataset.theme = t;
     })();
   </script>
-  <link rel="stylesheet" href="styles.css?v=20260709m">
+  <link rel="stylesheet" href="styles.css?v=20260709n">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -133,7 +136,7 @@
 
 <main class="wrap">
   <div class="card">
-    <label for="input" style="display:none">Serialized data or text</label>
+    <label for="input" class="sr-only">Serialized data or text</label>
     <textarea id="input" placeholder="Paste a serialized value, a wp_options row, or any text (for example: a:2:{s:4:&quot;home&quot;;s:19:&quot;http://old.example&quot;;...})" spellcheck="false" style="min-height:150px; font-family: var(--mono); font-size: 0.9rem;"></textarea>
     <div class="policy-modes" style="margin-top:14px">
       <label><input type="radio" name="mode" value="replace" checked> Search &amp; replace</label>
@@ -209,6 +212,6 @@
 </footer>
 
 <button id="to-top" class="to-top" type="button" aria-label="Back to top">&#8593;</button>
-<script type="module" src="app.js?v=20260709m"></script>
+<script type="module" src="app.js?v=20260709n"></script>
 </body>
 </html>
