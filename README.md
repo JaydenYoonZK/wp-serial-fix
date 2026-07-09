@@ -9,7 +9,7 @@ Change URLs and domains in WordPress serialized data without breaking it, and re
 </p>
 
 <a href="https://jaydenyoonzk.github.io/wp-serial-fix/?demo">
-  <img src="docs/assets/preview.png" alt="WP Serial Fix safely replacing a domain across a serialized wp_options value and recalculating every length prefix" width="100%">
+  <img src="docs/assets/preview.png" alt="WP Serial Fix shown in light and dark themes, the hero with its before-and-after serialized-value illustration recalculating every length prefix" width="100%">
 </a>
 
 **[Open the live tool](https://jaydenyoonzk.github.io/wp-serial-fix/)** or **[see it fix a sample](https://jaydenyoonzk.github.io/wp-serial-fix/?demo)**. Nothing is uploaded.
