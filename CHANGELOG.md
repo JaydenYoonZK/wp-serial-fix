@@ -3,6 +3,25 @@
 All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.2.0] - 2026-07-09
+
+### Added
+
+- A Content Security Policy on the browser tool. Everything runs locally and the page makes no network request, so the policy sets `connect-src 'none'`, which means the browser itself refuses to send your pasted database values anywhere. Verified in a browser: the tool works and an outbound request is blocked.
+
+### Fixed
+
+- The parser now validates scalar values, so malformed data like `i:notanumber;` or `b:5;` is no longer accepted as valid serialized data. It round-tripped harmlessly before, but a plain-text line that merely resembled a broken scalar could flip the multi-value paste flow into the wrong mode. Real PHP scalars, including the special doubles `INF`, `-INF`, and `NAN` and scientific notation, still parse.
+
+### Changed
+
+- Accessibility: the paste box now has a real label instead of one hidden with `display:none`.
+- 19 tests, up from 18.
+
+### Notes
+
+This release followed a full audit of the serialization engine with adversarial inputs. No other defect was found: byte-accurate lengths for multibyte and emoji, NUL-delimited private and protected object keys, references, custom-serialized objects, nested serialized-inside-serialized values, and the strict parser trusting the length prefix through quote-semicolon content all behave correctly, and repair stays linear on large input.
+
 ## [1.1.6] - 2026-07-09
 
 ### Changed
@@ -77,6 +96,7 @@ First stable release.
 [1.1.3]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.1.3
 [1.1.2]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.1.2
 [1.1.1]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.1.1
+[1.2.0]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.2.0
 [1.1.0]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.1.0
 [1.0.1]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.0.1
 [1.0.0]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.0.0

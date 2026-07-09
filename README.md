@@ -69,7 +69,7 @@ repair('s:19:"https://new-domain.example";').text;   // valid serialized data
 npm test
 ```
 
-18 tests cover round-tripping, byte-accurate lengths, multibyte, nested serialization, references and custom-serialized objects, repair with quote-semicolon content, and the plain-vs-serialized detection.
+19 tests cover round-tripping, byte-accurate lengths, multibyte, nested serialization, references and custom-serialized objects, repair with quote-semicolon content, scalar-value validation, and the plain-vs-serialized detection.
 
 ## When to use WP-CLI instead
 

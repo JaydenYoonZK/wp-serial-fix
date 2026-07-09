@@ -1,6 +1,6 @@
 {
   "name": "wp-serial-fix",
-  "version": "1.1.6",
+  "version": "1.2.0",
   "description": "Serialization-safe search and replace for WordPress data, plus repair for already-broken serialized values. Browser-based, no dependencies.",
   "type": "module",
   "private": true,
