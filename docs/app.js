@@ -1,4 +1,4 @@
-import { process, isSerialized, byteLength, serialize } from "./serial.js";
+import { process, isSerialized, byteLength, serialize } from "./serial.js?v=20260709o";
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
@@ -57,12 +57,13 @@ function run() {
 
     const valid = isSerialized(r.output.trim());
     let badge, tone;
-    if (!r.ok) { badge = "COULD NOT PARSE"; tone = "phantom"; }
+    if (!r.ok) { badge = "COULD NOT PROCESS"; tone = "phantom"; }
     else if (mode === "repair") { badge = r.repaired ? `REPAIRED ${r.repaired}` : "ALREADY VALID"; tone = r.repaired ? "warn" : "ok"; }
     else if (r.kind === "serialized") { badge = valid ? "SERIALIZED, SAFE" : "CHECK"; tone = valid ? "ok" : "warn"; }
     else { badge = "PLAIN TEXT"; tone = "default"; }
 
-    const meta = r.kind === "serialized" && valid
+    const meta = !r.ok ? esc(r.error || "Could not process this value")
+      : r.kind === "serialized" && valid
       ? `valid serialized data, ${byteLength(r.output)} bytes`
       : r.kind === "plain" ? "not serialized, plain replace applied"
       : r.error ? esc(r.error) : "";
@@ -82,11 +83,10 @@ function run() {
       ? `<span class="chip amber"><strong>${repaired}</strong> length prefix${repaired === 1 ? "" : "es"} repaired</span>`
       : `<span class="chip ok">Nothing to repair, the data was already valid</span>`);
   } else {
-    chips.push(changed
-      ? `<span class="chip green"><strong>${changed}</strong> value${changed === 1 ? "" : "s"} changed</span>`
-      : `<span class="chip">No matches for that search term</span>`);
+    if (changed) chips.push(`<span class="chip green"><strong>${changed}</strong> value${changed === 1 ? "" : "s"} changed</span>`);
+    else if (!failed) chips.push(`<span class="chip">No matches for that search term</span>`);
     if (serialized) chips.push(`<span class="chip"><strong>${serialized}</strong> serialized, lengths recalculated</span>`);
-    if (failed) chips.push(`<span class="chip red"><strong>${failed}</strong> could not be parsed</span>`);
+    if (failed) chips.push(`<span class="chip red"><strong>${failed}</strong> could not be processed</span>`);
   }
   summary.innerHTML = chips.join("");
 

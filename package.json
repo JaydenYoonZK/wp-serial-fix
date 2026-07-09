@@ -4,6 +4,11 @@
   "description": "Serialization-safe search and replace for WordPress data, plus repair for already-broken serialized values. Browser-based, no dependencies.",
   "type": "module",
   "private": true,
+  "files": [
+    "docs/serial.js",
+    "LICENSE",
+    "README.md"
+  ],
   "scripts": {
     "test": "node --test test/serial.test.mjs",
     "serve": "python3 -m http.server 8401 -d docs"

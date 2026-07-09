@@ -3,6 +3,20 @@
 All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## Unreleased
+
+### Added
+
+- CI now runs the test suite and browser module syntax checks on Linux, Windows, and macOS.
+- Security reporting is documented through GitHub private vulnerability reports.
+- Regression tests cover invalid regular expressions for both plain text and serialized values.
+
+### Fixed
+
+- Invalid regex input now returns a controlled per-value error instead of throwing and breaking the browser interaction on plain text.
+- The README stars badge now links to the repository page instead of the zero-star `/stargazers` page that GitHub returns as 404.
+- The browser tool cache-busts its serialization engine import so Pages serves the current audited code.
+
 ## [1.2.0] - 2026-07-09
 
 ### Added
