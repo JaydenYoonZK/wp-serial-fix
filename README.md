@@ -35,7 +35,7 @@ PHP reads 19 bytes, finds no closing quote, and `unserialize()` returns `false`.
 - **Serialization-safe search and replace**: parses the value, replaces inside the strings, and re-emits with every length prefix recomputed from the real byte length (multibyte and emoji counted correctly). This is what `wp search-replace` does, in your browser, with no database connection.
 - **Repair mode**: for data a bad replace already corrupted, it recomputes the wrong length prefixes back to correct, even when the string content itself contains a quote-semicolon.
 - **Nested data**: descends into serialized data stored inside other serialized strings, which WordPress does constantly.
-- **Objects, arrays, mixed input**: handles `O:` objects (with class name lengths), nested arrays, and pasted columns of many values at once, labeling plain text separately.
+- **Objects, arrays, mixed input**: handles `O:` objects (with class name lengths), nested arrays, `R:`/`r:` references and `C:` custom-serialized objects, private and protected object properties, and pasted columns of many values at once, labeling plain text separately.
 
 ## Use it
 
@@ -69,7 +69,7 @@ repair('s:19:"https://new-domain.example";').text;   // valid serialized data
 npm test
 ```
 
-16 tests cover round-tripping, byte-accurate lengths, multibyte, nested serialization, repair with quote-semicolon content, and the plain-vs-serialized detection.
+18 tests cover round-tripping, byte-accurate lengths, multibyte, nested serialization, references and custom-serialized objects, repair with quote-semicolon content, and the plain-vs-serialized detection.
 
 ## When to use WP-CLI instead
 

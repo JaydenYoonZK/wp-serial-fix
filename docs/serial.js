@@ -90,6 +90,44 @@ function parseNode(str, ctx) {
     return { type: t === "O" ? "object" : "array", className, items };
   }
 
+  if (t === "r" || t === "R") {
+    // Reference: r:N;  (value ref)  or  R:N;  (object ref). Structural, no
+    // string content of its own, so it is preserved verbatim.
+    if (str[ctx.i + 1] !== ":") throw new ParseError(`expected ':' at ${ctx.i + 1}`);
+    const end = str.indexOf(";", ctx.i + 2);
+    if (end === -1) throw new ParseError(`unterminated reference at ${ctx.i}`);
+    const raw = str.slice(ctx.i + 2, end);
+    ctx.i = end + 1;
+    return { type: "ref", token: t, raw };
+  }
+
+  if (t === "C") {
+    // Custom (Serializable): C:namelen:"Class":datalen:{payload}. The payload
+    // is an opaque, class-defined byte blob, so it is preserved verbatim rather
+    // than searched (its length prefix would break under a naive edit).
+    let p = ctx.i + 2;
+    const c1 = str.indexOf(":", p);
+    if (c1 === -1) throw new ParseError(`bad custom header at ${ctx.i}`);
+    const namelen = parseInt(str.slice(p, c1), 10);
+    if (str[c1 + 1] !== '"') throw new ParseError(`expected '"' at ${c1 + 1}`);
+    const className = str.slice(c1 + 2, c1 + 2 + namelen);
+    let q = c1 + 2 + namelen;
+    if (str[q] !== '"' || str[q + 1] !== ":") throw new ParseError(`bad custom class at ${ctx.i}`);
+    q += 2;
+    const c2 = str.indexOf(":", q);
+    if (c2 === -1) throw new ParseError(`bad custom length at ${ctx.i}`);
+    const datalen = parseInt(str.slice(q, c2), 10);
+    if (str[c2 + 1] !== "{") throw new ParseError(`expected '{' at ${c2 + 1}`);
+    const dataStart = c2 + 2;
+    const rest = enc.encode(str.slice(dataStart));
+    if (rest.length < datalen) throw new ParseError(`custom payload overruns at ${ctx.i}`);
+    const data = dec.decode(rest.slice(0, datalen));
+    const after = dataStart + data.length;
+    if (str[after] !== "}") throw new ParseError(`custom not closed at ${ctx.i}`);
+    ctx.i = after + 1;
+    return { type: "custom", className, data };
+  }
+
   throw new ParseError(`unknown token ${JSON.stringify(t)} at ${ctx.i}`);
 }
 
@@ -104,7 +142,7 @@ export function parse(str) {
 /** True if the whole string is one well-formed serialized value. */
 export function isSerialized(str) {
   if (typeof str !== "string" || str.length < 2) return false;
-  if (!/^[NbidsaO]:/.test(str) && str !== "N;") return false;
+  if (!/^[NbidsaOrRC]:/.test(str) && str !== "N;") return false;
   try { parse(str); return true; } catch { return false; }
 }
 
@@ -117,6 +155,8 @@ export function serialize(node) {
     case "int": return `i:${node.raw};`;
     case "double": return `d:${node.raw};`;
     case "str": return `s:${byteLength(node.v)}:"${node.v}";`;
+    case "ref": return `${node.token}:${node.raw};`;
+    case "custom": return `C:${byteLength(node.className)}:"${node.className}":${byteLength(node.data)}:{${node.data}}`;
     case "array":
       return `a:${node.items.length}:{${node.items.map(([k, v]) => serialize(k) + serialize(v)).join("")}}`;
     case "object":
@@ -176,7 +216,7 @@ export function repair(str) {
   let out = "";
   let i = 0;
   let fixed = 0;
-  const nextTokenStart = /^(?:[sabidO]:|N;|\})/;
+  const nextTokenStart = /^(?:[sabidOrRC]:|N;|\})/;
 
   while (i < str.length) {
     const m = /s:(\d+):"/.exec(str.slice(i));

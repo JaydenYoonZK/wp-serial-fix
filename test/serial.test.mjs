@@ -123,3 +123,24 @@ test("regex replace is supported", () => {
   const out = strictReplace('s:11:"post-12-abc";', "post-\\d+", "post-N", { regex: true });
   assert.equal(parse(out).v, "post-N-abc");
 });
+
+test("handles PHP references (R:/r:) instead of failing", () => {
+  const withRef = 'a:2:{i:0;O:8:"stdClass":1:{s:1:"a";s:3:"old";}i:1;R:2;}';
+  assert.equal(isSerialized(withRef), true);
+  assert.equal(serialize(parse(withRef)), withRef, "reference round-trips");
+  const out = strictReplace(withRef, "old", "new");
+  assert.equal(isSerialized(out), true);
+  assert.ok(out.includes("R:2;"), "reference is preserved");
+  assert.equal(parse(out).items[0][1].items[0][1].v, "new");
+});
+
+test("handles custom-serialized objects (C:) without touching their payload", () => {
+  const payload = "opaque{data};blob";
+  const custom = `C:3:"Foo":${byteLength(payload)}:{${payload}}`;
+  assert.equal(isSerialized(custom), true);
+  assert.equal(serialize(parse(custom)), custom, "custom object round-trips");
+  const mixed = `a:2:{i:0;s:3:"old";i:1;${custom}}`;
+  const out = strictReplace(mixed, "old", "new");
+  assert.equal(parse(out).items[0][1].v, "new");
+  assert.ok(out.includes(`{${payload}}`), "custom payload is left untouched");
+});
