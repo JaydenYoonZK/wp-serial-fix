@@ -124,6 +124,22 @@ test("regex replace is supported", () => {
   assert.equal(parse(out).v, "post-N-abc");
 });
 
+test("invalid regex is reported instead of thrown for plain text", () => {
+  const out = process("plain old text", { find: "[", replace: "x", regex: true });
+  assert.equal(out.results[0].kind, "plain");
+  assert.equal(out.results[0].ok, false);
+  assert.match(out.results[0].error, /Invalid regular expression|Unterminated character class/);
+  assert.equal(out.results[0].output, "plain old text");
+});
+
+test("invalid regex is reported instead of thrown for serialized text", () => {
+  const out = process('s:3:"old";', { find: "[", replace: "x", regex: true });
+  assert.equal(out.results[0].kind, "serialized");
+  assert.equal(out.results[0].ok, false);
+  assert.match(out.results[0].error, /Invalid regular expression|Unterminated character class/);
+  assert.equal(out.results[0].output, 's:3:"old";');
+});
+
 test("handles PHP references (R:/r:) instead of failing", () => {
   const withRef = 'a:2:{i:0;O:8:"stdClass":1:{s:1:"a";s:3:"old";}i:1;R:2;}';
   assert.equal(isSerialized(withRef), true);

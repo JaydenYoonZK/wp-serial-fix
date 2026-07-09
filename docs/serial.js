@@ -279,6 +279,11 @@ export function process(input, { mode = "replace", find = "", replace = "", rege
   const lines = input.split(/\r?\n/);
   const multi = lines.filter(l => l.trim()).length > 1 && lines.some(l => isSerialized(l.trim()));
   const targets = multi ? lines : [input];
+  let replaceError = null;
+  if (mode !== "repair" && find) {
+    try { makeReplacer(find, replace, { regex }); }
+    catch (e) { replaceError = e; }
+  }
 
   const results = targets.map((raw) => {
     const value = multi ? raw : input;
@@ -288,6 +293,10 @@ export function process(input, { mode = "replace", find = "", replace = "", rege
     if (mode === "repair") {
       const r = repair(value);
       return { kind: serialized ? "serialized" : "plain", repaired: r.fixed, input: value, output: r.text, ok: true };
+    }
+
+    if (replaceError) {
+      return { kind: serialized ? "serialized" : "plain", input: value, output: value, ok: false, error: replaceError.message };
     }
 
     if (!find) return { kind: serialized ? "serialized" : "plain", input: value, output: value, ok: true, note: "no search term" };
