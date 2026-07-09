@@ -4,6 +4,18 @@ const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 const input = $("input");
+const actionBtn = $("run");
+const clearBtn = $("clear");
+
+// Enable the action and Clear buttons only when the box has content. An empty
+// box means nothing to run and nothing to clear, so both are disabled (dimmed,
+// dashed edge, not-allowed cursor).
+function syncControls() {
+  const hasContent = input.value.trim().length > 0;
+  actionBtn.disabled = !hasContent;
+  clearBtn.disabled = !hasContent;
+}
+input.addEventListener("input", syncControls);
 const results = $("results");
 const summary = $("summary");
 const blocks = $("blocks");
@@ -130,7 +142,8 @@ pasteBtn.addEventListener("click", async () => {
   setTimeout(() => { pasteBtn.textContent = prev; }, 2400);
 });
 
-$("clear").addEventListener("click", () => { input.value = ""; results.hidden = true; input.focus(); });
+clearBtn.addEventListener("click", () => { input.value = ""; results.hidden = true; syncControls(); input.focus(); });
+syncControls();
 
 syncMode();
 if (new URLSearchParams(location.search).has("demo")) loadSample();
