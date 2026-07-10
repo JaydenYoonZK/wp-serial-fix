@@ -3,6 +3,12 @@
 All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.2.15] - 2026-07-10
+
+### Fixed
+
+- Tooltip arrows are visible again. The arrow is a bordered square whose colored wedge sat entirely behind the tooltip bubble, which paints later and shares the same ink color, so the bubble swallowed the arrow and nothing bridged the gap to the button. The arrow now sits with its tip in the gap, 4px off the button, and its base tucked one pixel under the bubble edge, painting above the bubble so the two read as a single speech-bubble shape. Both variants are fixed, the standard bubble above a button and the theme toggle's bubble below it.
+
 ## [1.2.14] - 2026-07-10
 
 ### Fixed
@@ -194,6 +200,7 @@ First stable release.
 - Dependency-free ES module engine (`docs/serial.js`) with 16 Node tests.
 - Browser UI in the shared suite design, with light and dark themes, a `?demo` deep link, and a paste-and-process button.
 
+[1.2.15]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.2.15
 [1.2.14]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.2.14
 [1.2.13]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.2.13
 [1.2.12]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.2.12
