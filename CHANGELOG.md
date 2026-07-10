@@ -3,6 +3,12 @@
 All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.2.14] - 2026-07-10
+
+### Fixed
+
+- The theme crossfade no longer stutters on phones. The browser's default crossfade blends the old and new page snapshots with a plus-lighter blend inside an isolated compositing group, which means two full-screen render passes every frame. Desktop GPUs absorb that, phone GPUs drop frames. The new page now sits fully opaque underneath while the old snapshot simply fades out above it, which reads identically on an opaque page and costs a single alpha layer. Decorative drift animations also pause for the half second the fade runs, freeing GPU headroom on mobile without any visible freeze.
+
 ## [1.2.13] - 2026-07-10
 
 ### Fixed
@@ -188,6 +194,7 @@ First stable release.
 - Dependency-free ES module engine (`docs/serial.js`) with 16 Node tests.
 - Browser UI in the shared suite design, with light and dark themes, a `?demo` deep link, and a paste-and-process button.
 
+[1.2.14]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.2.14
 [1.2.13]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.2.13
 [1.2.12]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.2.12
 [1.2.11]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.2.11
