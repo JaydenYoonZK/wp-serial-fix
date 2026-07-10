@@ -3,6 +3,12 @@
 All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.2.9] - 2026-07-10
+
+### Fixed
+
+- The back-to-top button no longer casts a heavy black smudge in light mode. Its shadow was a single wide dark-theme blur that was never re-tuned for a cream background. Each theme now gets a layered shadow of its own: a tight warm contact shadow plus a soft chartreuse halo in light mode, and a grounded contact shadow with a gentle chartreuse under-glow in dark, with matching hover and pressed variants.
+
 ## [1.2.8] - 2026-07-10
 
 ### Changed
@@ -153,6 +159,7 @@ First stable release.
 - Dependency-free ES module engine (`docs/serial.js`) with 16 Node tests.
 - Browser UI in the shared suite design, with light and dark themes, a `?demo` deep link, and a paste-and-process button.
 
+[1.2.9]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.2.9
 [1.2.8]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.2.8
 [1.2.7]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.2.7
 [1.2.6]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.2.6
