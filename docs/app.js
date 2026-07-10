@@ -1,4 +1,4 @@
-import { process, isSerialized, byteLength, serialize } from "./serial.js?v=20260710k";
+import { process, isSerialized, byteLength, serialize } from "./serial.js?v=20260710l";
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
@@ -182,8 +182,19 @@ function syncThemeIcon() {
 }
 let themeFadeTimer = 0;
 themeToggle.addEventListener("click", () => {
-  // Fade the page between themes instead of snapping. Color-only, so the
-  // sun and moon morph and every hover transform still run at their own pace.
+  // Crossfade the page in one composited pass where the browser supports
+  // view transitions; text then cannot re-ease its inherited color and lag
+  // behind the page. Elsewhere, fall back to fading only non-inherited
+  // colors so text switches in one clean step.
+  if (document.startViewTransition) {
+    document.startViewTransition(() => {
+      const next = document.documentElement.dataset.theme === "light" ? "dark" : "light";
+      document.documentElement.dataset.theme = next;
+      localStorage.setItem("theme", next);
+      syncThemeIcon();
+    });
+    return;
+  }
   document.documentElement.classList.add("theme-fading");
   clearTimeout(themeFadeTimer);
   themeFadeTimer = setTimeout(() => document.documentElement.classList.remove("theme-fading"), 500);

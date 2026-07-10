@@ -3,6 +3,12 @@
 All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.2.13] - 2026-07-10
+
+### Fixed
+
+- Text no longer flashes and re-settles mid fade when switching between light and dark mode. Text color inherits, so during the old per-element fade every element kept re-easing its parent's already animating color, which made type lag behind the page and snap late. The switch now crossfades the whole page as a single composited snapshot through the View Transitions API, so text and background move together in one smooth pass. The theme toggle is excluded, so its sun and moon morph still plays live. Browsers without view transitions fall back to fading backgrounds, borders and shadows only, with text changing in one clean step.
+
 ## [1.2.12] - 2026-07-10
 
 ### Fixed
@@ -182,6 +188,7 @@ First stable release.
 - Dependency-free ES module engine (`docs/serial.js`) with 16 Node tests.
 - Browser UI in the shared suite design, with light and dark themes, a `?demo` deep link, and a paste-and-process button.
 
+[1.2.13]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.2.13
 [1.2.12]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.2.12
 [1.2.11]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.2.11
 [1.2.10]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.2.10
