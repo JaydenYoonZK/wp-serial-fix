@@ -3,6 +3,15 @@
 All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.2.20] - 2026-07-11
+
+### Fixed
+
+- The key press finally travels. During a click the pointer is still hovering, and the hover lift rule outranked the press rule, so the cap held its raised position while the shadows switched to pressed geometry, which read as the base jumping up instead of the cap going down. The press is now declared after the hover lift at matching specificity and wins the cascade, so the cap visibly sinks 3px into its anchored base on every click.
+- Dark mode's primary button no longer loses its 3D edge on hover. A leftover rule from before the key redesign replaced the whole hover shadow with a flat glow.
+- In light mode the pressed shadow now outranks the hover shadow mid click, so the primary button's base geometry stays correct through the press.
+- Tapping controls on phones no longer flashes the system's default grey tap rectangle over the design's own pressed states. Keyboard focus outlines are unaffected.
+
 ## [1.2.19] - 2026-07-11
 
 ### Changed
@@ -225,6 +234,7 @@ First stable release.
 - Dependency-free ES module engine (`docs/serial.js`) with 16 Node tests.
 - Browser UI in the shared suite design, with light and dark themes, a `?demo` deep link, and a paste-and-process button.
 
+[1.2.20]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.2.20
 [1.2.19]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.2.19
 [1.2.18]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.2.18
 [1.2.17]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.2.17
