@@ -1,4 +1,4 @@
-import { process, isSerialized, byteLength, serialize } from "./serial.js?v=20260710j";
+import { process, isSerialized, byteLength, serialize } from "./serial.js?v=20260710k";
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
@@ -180,7 +180,13 @@ function syncThemeIcon() {
   themeToggle.setAttribute("aria-label", label);
   themeToggle.setAttribute("data-tip", label);
 }
+let themeFadeTimer = 0;
 themeToggle.addEventListener("click", () => {
+  // Fade the page between themes instead of snapping. Color-only, so the
+  // sun and moon morph and every hover transform still run at their own pace.
+  document.documentElement.classList.add("theme-fading");
+  clearTimeout(themeFadeTimer);
+  themeFadeTimer = setTimeout(() => document.documentElement.classList.remove("theme-fading"), 500);
   const next = document.documentElement.dataset.theme === "light" ? "dark" : "light";
   document.documentElement.dataset.theme = next;
   localStorage.setItem("theme", next);
