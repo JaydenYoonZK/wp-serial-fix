@@ -3,6 +3,12 @@
 All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.2.21] - 2026-07-11
+
+### Fixed
+
+- The film grain now actually renders on iPhone and iPad. WebKit does not apply SVG filters when an SVG is rasterized as a CSS background image, so the turbulence-based tile painted a faint dark veil with no noise at all on iOS, leaving gradient banding fully visible there. The grain is now a small pre-rendered raster tile that every browser draws identically, and it renders pixel-crisp on high-density screens instead of being smoothed into blur when the display upscales it. Gradient banding is dithered away in both themes with no soft or low-quality look. README previews regenerated.
+
 ## [1.2.20] - 2026-07-11
 
 ### Fixed
@@ -234,6 +240,7 @@ First stable release.
 - Dependency-free ES module engine (`docs/serial.js`) with 16 Node tests.
 - Browser UI in the shared suite design, with light and dark themes, a `?demo` deep link, and a paste-and-process button.
 
+[1.2.21]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.2.21
 [1.2.20]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.2.20
 [1.2.19]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.2.19
 [1.2.18]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.2.18
