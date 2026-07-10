@@ -3,6 +3,13 @@
 All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.2.3] - 2026-07-10
+
+### Changed
+
+- Light mode is redesigned around a warm editorial palette inspired by premium product sites: terracotta coral becomes the accent for buttons, links, and highlights, the success wash turns sage, the danger red deepens toward crimson so it stays clearly apart from the coral, type warms one step browner, the menu band turns soft sage, and the decorative scene (orbs, spheres, cube wireframes) moves to coral, sage, and warm brown. The cream background and the whole dark theme are untouched, and every rendered text pair measures 4.5:1 or better on the live page.
+- The README preview is regenerated for the new light palette.
+
 ## [1.2.2] - 2026-07-10
 
 ### Changed
@@ -111,6 +118,7 @@ First stable release.
 - Dependency-free ES module engine (`docs/serial.js`) with 16 Node tests.
 - Browser UI in the shared suite design, with light and dark themes, a `?demo` deep link, and a paste-and-process button.
 
+[1.2.3]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.2.3
 [1.2.2]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.2.2
 [1.2.1]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.2.1
 [1.1.6]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.1.6
