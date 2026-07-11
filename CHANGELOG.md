@@ -3,6 +3,12 @@
 All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.3.15] - 2026-07-11
+
+### Changed
+
+- The 404 page is now a full member of the site. It carries the brand navigation bar with the working theme toggle and crossfade, the ambient three dimensional background scene with its parallax, the cursor dust, and a new animated illustration of a browser window missing its page, complete with a searching magnifying glass. Navigation links from the 404 lead back into the tool's sections.
+
 ## [1.3.14] - 2026-07-11
 
 ### Added
@@ -368,6 +374,7 @@ First stable release.
 - Dependency-free ES module engine (`docs/serial.js`) with 16 Node tests.
 - Browser UI in the shared suite design, with light and dark themes, a `?demo` deep link, and a paste-and-process button.
 
+[1.3.15]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.15
 [1.3.14]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.14
 [1.3.13]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.13
 [1.3.12]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.12
