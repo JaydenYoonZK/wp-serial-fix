@@ -1,4 +1,4 @@
-import { process, isSerialized, byteLength, serialize } from "./serial.js?v=1.3.15";
+import { process, isSerialized, byteLength, serialize } from "./serial.js?v=1.3.16";
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
@@ -405,3 +405,12 @@ if (siteNav) {
     if (sparks.length && !raf) raf = requestAnimationFrame(tick);
   }, { passive: true });
 })();
+
+
+// Offline support: a small service worker caches the page shell so the
+// tool opens without a connection after the first visit.
+if ("serviceWorker" in navigator) {
+  addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch(() => { /* offline support is optional */ });
+  });
+}
