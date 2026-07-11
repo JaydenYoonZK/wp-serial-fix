@@ -3,6 +3,12 @@
 All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.3.13] - 2026-07-11
+
+### Added
+
+- The site now publishes its own search and AI crawler metadata: a robots.txt with a deliberate allow policy, a sitemap.xml, and an llms.txt that maps the tool, documentation, and source for AI systems. The llms.txt follows the structure the format proposes, with the required name heading, a summary blockquote, and annotated link sections.
+
 ## [1.3.12] - 2026-07-11
 
 ### Added
@@ -356,6 +362,7 @@ First stable release.
 - Dependency-free ES module engine (`docs/serial.js`) with 16 Node tests.
 - Browser UI in the shared suite design, with light and dark themes, a `?demo` deep link, and a paste-and-process button.
 
+[1.3.13]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.13
 [1.3.12]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.12
 [1.3.11]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.11
 [1.3.10]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.10

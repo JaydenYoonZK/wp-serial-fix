@@ -1,0 +1,16 @@
+# WP Serial Fix
+
+> Serialization-safe search and replace for WordPress data, plus repair for values a bad SQL replace already broke. Runs entirely in the browser.
+
+## Tool
+
+- [WP Serial Fix](https://jaydenyoonzk.github.io/wp-serial-fix/): the tool itself, a static page that runs entirely in the browser with no accounts and no data collection
+
+## Documentation
+
+- [README](https://github.com/JaydenYoonZK/wp-serial-fix#readme): what the tool does, how it works, and its engineering notes
+- [Changelog](https://github.com/JaydenYoonZK/wp-serial-fix/blob/main/CHANGELOG.md): dated release history
+
+## Source
+
+- [Repository](https://github.com/JaydenYoonZK/wp-serial-fix): MIT licensed source code
