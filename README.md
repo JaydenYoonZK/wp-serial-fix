@@ -33,8 +33,8 @@ PHP reads 19 bytes, finds no closing quote, and `unserialize()` returns `false`.
 
 ## What this does
 
-- **Serialization-safe search and replace**: parses the value, replaces inside the strings, and re-emits with every length prefix recomputed from the real byte length (multibyte and emoji counted correctly). This is what `wp search-replace` does, in your browser, with no database connection.
-- **Repair mode**: for data a bad replace already corrupted, it recomputes the wrong length prefixes back to correct, even when the string content itself contains a quote-semicolon.
+- **Serialization-safe search and replace**: parses the value, replaces inside the strings, and re-emits with every length prefix recomputed from the real byte length (multibyte and emoji counted correctly). It follows the same safety principle as `wp search-replace`, with no database connection.
+- **Conservative repair mode**: follows arrays and objects to recover wrong string lengths, validates the completed value, and leaves ambiguous or unrecoverable input unchanged.
 - **Nested data**: descends into serialized data stored inside other serialized strings, which WordPress does constantly.
 - **Objects, arrays, mixed input**: handles `O:` objects (with class name lengths), nested arrays, `R:`/`r:` references and `C:` custom-serialized objects, private and protected object properties, and pasted columns of many values at once, labeling plain text separately.
 
@@ -70,11 +70,13 @@ repair('s:19:"https://new-domain.example";').text;   // valid serialized data
 npm test
 ```
 
-21 tests cover round-tripping, byte-accurate lengths, multibyte, nested serialization, references and custom-serialized objects, repair with quote-semicolon content, scalar-value validation, invalid-regex handling, and the plain-vs-serialized detection.
+32 tests cover round-tripping, exact headers, UTF-8 byte boundaries, nested serialization, references, custom-serialized objects, structure-aware repair, invalid regular expressions, resource limits, and mixed input.
+
+The parser accepts values up to 5 MiB, 100,000 nodes, and 256 structural levels. Nested serialized strings are followed to 32 levels. These limits keep accidental or hostile input from tying up the browser. PHP strings are byte streams, while a browser text box contains Unicode text, so opaque non-text binary payloads should be handled with PHP or WP-CLI instead.
 
 ## When to use WP-CLI instead
 
-For a whole live database, `wp search-replace "old" "new"` streams every table and is the right tool. WP Serial Fix is for the common middle ground: a handful of values, one stubborn option, a page builder layout, or a cleanup, without WP-CLI and without pasting production data into a website you do not control.
+For a whole live database, `wp search-replace "old" "new"` is the right tool. WP Serial Fix is for a handful of values, one stubborn option, a page builder layout, or a cleanup, without giving a web page database access.
 
 ## License
 

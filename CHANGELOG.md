@@ -3,6 +3,26 @@
 All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.3.0] - 2026-07-11
+
+### Added
+
+- Structure-aware repair explores valid string boundaries inside arrays and objects, verifies the completed serialized value, and refuses ambiguous or unrecoverable input instead of guessing.
+- Parser safeguards cap input size, node count, structural depth, nested serialized strings, and regular expression length.
+- Regression coverage now includes exact numeric headers, UTF-8 boundaries, malformed object and custom-object headers, nested repairs, misleading token text inside strings, whitespace preservation, references, and depth exhaustion.
+
+### Changed
+
+- Continuous integration now tests supported Node.js releases 20, 22, and 24 on Linux, with Windows and macOS coverage retained.
+- Documentation now distinguishes value-level browser work from full database replacement and documents the engine's text and resource boundaries.
+
+### Fixed
+
+- String, object, array, custom-object, scalar, and reference headers are validated exactly instead of accepting numeric prefixes followed by junk.
+- UTF-8 lengths can no longer end in the middle of a multibyte character, including class names and custom payloads.
+- Search and replace preserves whitespace around serialized values, and an empty engine-level search is now a no-op.
+- Repair failures are reported as failures in the result summary instead of being labeled as already valid.
+
 ## [1.2.25] - 2026-07-11
 
 ### Fixed
@@ -264,6 +284,7 @@ First stable release.
 - Dependency-free ES module engine (`docs/serial.js`) with 16 Node tests.
 - Browser UI in the shared suite design, with light and dark themes, a `?demo` deep link, and a paste-and-process button.
 
+[1.3.0]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.0
 [1.2.25]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.2.25
 [1.2.24]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.2.24
 [1.2.23]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.2.23
