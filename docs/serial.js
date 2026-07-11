@@ -16,7 +16,11 @@
  */
 
 const enc = new TextEncoder();
-const dec = new TextDecoder();
+
+const MAX_INPUT_BYTES = 5 * 1024 * 1024;
+const MAX_DEPTH = 256;
+const MAX_NODES = 100000;
+const MAX_REGEX_LENGTH = 512;
 
 /** UTF-8 byte length, which is what PHP's s: prefix counts. */
 export function byteLength(str) {
@@ -27,7 +31,39 @@ export function byteLength(str) {
 
 class ParseError extends Error {}
 
+function readUnsigned(str, start, end, label) {
+  const raw = str.slice(start, end);
+  if (!/^(?:0|[1-9]\d*)$/.test(raw)) throw new ParseError(`bad ${label} at ${start}`);
+  const value = Number(raw);
+  if (!Number.isSafeInteger(value)) throw new ParseError(`${label} is too large at ${start}`);
+  return value;
+}
+
+function readBytes(str, start, length, label) {
+  let i = start;
+  let bytes = 0;
+  while (i < str.length && bytes < length) {
+    const point = str.codePointAt(i);
+    const width = point > 0xffff ? 2 : 1;
+    const size = byteLength(str.slice(i, i + width));
+    if (bytes + size > length) throw new ParseError(`${label} ends inside a UTF-8 character at ${start}`);
+    bytes += size;
+    i += width;
+  }
+  if (bytes !== length) throw new ParseError(`${label} overruns input at ${start}`);
+  return { value: str.slice(start, i), end: i };
+}
+
+function enterNode(ctx) {
+  ctx.nodes += 1;
+  if (ctx.nodes > MAX_NODES) throw new ParseError(`serialized value exceeds ${MAX_NODES} nodes`);
+  ctx.depth += 1;
+  if (ctx.depth > MAX_DEPTH) throw new ParseError(`serialized value exceeds ${MAX_DEPTH} levels`);
+}
+
 function parseNode(str, ctx) {
+  enterNode(ctx);
+  try {
   const t = str[ctx.i];
   if (t === undefined) throw new ParseError(`unexpected end at ${ctx.i}`);
 
@@ -50,8 +86,8 @@ function parseNode(str, ctx) {
     const kind = t === "b" ? "bool" : t === "i" ? "int" : "double";
     const valid =
       t === "b" ? (raw === "0" || raw === "1")
-      : t === "i" ? /^-?\d+$/.test(raw)
-      : (raw === "INF" || raw === "-INF" || raw === "NAN" || (raw !== "" && Number.isFinite(Number(raw))));
+      : t === "i" ? /^-?(?:0|[1-9]\d*)$/.test(raw)
+      : (raw === "INF" || raw === "-INF" || raw === "NAN" || /^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:E[+-]?\d+)?$/.test(raw));
     if (!valid) throw new ParseError(`bad ${kind} value at ${ctx.i}`);
     ctx.i = end + 1;
     return { type: kind, raw };
@@ -60,19 +96,16 @@ function parseNode(str, ctx) {
   if (t === "s") {
     const colon = str.indexOf(":", ctx.i + 2);
     if (colon === -1) throw new ParseError(`bad string header at ${ctx.i}`);
-    const len = parseInt(str.slice(ctx.i + 2, colon), 10);
-    if (Number.isNaN(len) || len < 0) throw new ParseError(`bad string length at ${ctx.i}`);
+    const len = readUnsigned(str, ctx.i + 2, colon, "string length");
     if (str[colon + 1] !== '"') throw new ParseError(`expected '"' at ${colon + 1}`);
     const start = colon + 2;
-    const rest = enc.encode(str.slice(start));
-    if (rest.length < len) throw new ParseError(`string overruns input at ${ctx.i}`);
-    const content = dec.decode(rest.slice(0, len));
-    const after = start + content.length;
+    const content = readBytes(str, start, len, "string");
+    const after = content.end;
     if (str[after] !== '"' || str[after + 1] !== ";") {
       throw new ParseError(`string not closed cleanly at ${ctx.i} (length prefix likely wrong)`);
     }
     ctx.i = after + 2;
-    return { type: "str", v: content };
+    return { type: "str", v: content.value };
   }
 
   if (t === "a" || t === "O") {
@@ -80,14 +113,20 @@ function parseNode(str, ctx) {
     let p = ctx.i + 2;
     if (t === "O") {
       const c = str.indexOf(":", p);
-      const clen = parseInt(str.slice(p, c), 10);
-      const cs = c + 2;
-      className = str.slice(cs, cs + clen);
-      p = cs + clen + 2;
+      if (c === -1) throw new ParseError(`bad object header at ${ctx.i}`);
+      const clen = readUnsigned(str, p, c, "class name length");
+      if (str[c + 1] !== '"') throw new ParseError(`expected '"' at ${c + 1}`);
+      const classPart = readBytes(str, c + 2, clen, "class name");
+      className = classPart.value;
+      if (str[classPart.end] !== '"' || str[classPart.end + 1] !== ":") {
+        throw new ParseError(`bad object class at ${ctx.i}`);
+      }
+      p = classPart.end + 2;
     }
     const colon = str.indexOf(":", p);
-    const n = parseInt(str.slice(p, colon), 10);
-    if (Number.isNaN(n) || n < 0) throw new ParseError(`bad count at ${ctx.i}`);
+    if (colon === -1) throw new ParseError(`bad count at ${ctx.i}`);
+    const n = readUnsigned(str, p, colon, "item count");
+    if (n > MAX_NODES - ctx.nodes) throw new ParseError(`item count is too large at ${p}`);
     if (str[colon + 1] !== "{") throw new ParseError(`expected '{' at ${colon + 1}`);
     ctx.i = colon + 2;
     const items = [];
@@ -108,6 +147,9 @@ function parseNode(str, ctx) {
     const end = str.indexOf(";", ctx.i + 2);
     if (end === -1) throw new ParseError(`unterminated reference at ${ctx.i}`);
     const raw = str.slice(ctx.i + 2, end);
+    if (!/^[1-9]\d*$/.test(raw) || !Number.isSafeInteger(Number(raw))) {
+      throw new ParseError(`bad reference at ${ctx.i}`);
+    }
     ctx.i = end + 1;
     return { type: "ref", token: t, raw };
   }
@@ -119,32 +161,37 @@ function parseNode(str, ctx) {
     let p = ctx.i + 2;
     const c1 = str.indexOf(":", p);
     if (c1 === -1) throw new ParseError(`bad custom header at ${ctx.i}`);
-    const namelen = parseInt(str.slice(p, c1), 10);
+    const namelen = readUnsigned(str, p, c1, "custom class name length");
     if (str[c1 + 1] !== '"') throw new ParseError(`expected '"' at ${c1 + 1}`);
-    const className = str.slice(c1 + 2, c1 + 2 + namelen);
-    let q = c1 + 2 + namelen;
+    const classPart = readBytes(str, c1 + 2, namelen, "custom class name");
+    const className = classPart.value;
+    let q = classPart.end;
     if (str[q] !== '"' || str[q + 1] !== ":") throw new ParseError(`bad custom class at ${ctx.i}`);
     q += 2;
     const c2 = str.indexOf(":", q);
     if (c2 === -1) throw new ParseError(`bad custom length at ${ctx.i}`);
-    const datalen = parseInt(str.slice(q, c2), 10);
+    const datalen = readUnsigned(str, q, c2, "custom payload length");
     if (str[c2 + 1] !== "{") throw new ParseError(`expected '{' at ${c2 + 1}`);
     const dataStart = c2 + 2;
-    const rest = enc.encode(str.slice(dataStart));
-    if (rest.length < datalen) throw new ParseError(`custom payload overruns at ${ctx.i}`);
-    const data = dec.decode(rest.slice(0, datalen));
-    const after = dataStart + data.length;
+    const dataPart = readBytes(str, dataStart, datalen, "custom payload");
+    const data = dataPart.value;
+    const after = dataPart.end;
     if (str[after] !== "}") throw new ParseError(`custom not closed at ${ctx.i}`);
     ctx.i = after + 1;
     return { type: "custom", className, data };
   }
 
   throw new ParseError(`unknown token ${JSON.stringify(t)} at ${ctx.i}`);
+  } finally {
+    ctx.depth -= 1;
+  }
 }
 
 /** Parse a single serialized value. Throws ParseError on malformed input. */
 export function parse(str) {
-  const ctx = { i: 0 };
+  if (typeof str !== "string") throw new ParseError("serialized value must be a string");
+  if (byteLength(str) > MAX_INPUT_BYTES) throw new ParseError(`serialized value exceeds ${MAX_INPUT_BYTES} bytes`);
+  const ctx = { i: 0, depth: 0, nodes: 0 };
   const node = parseNode(str, ctx);
   if (ctx.i !== str.length) throw new ParseError(`trailing data at ${ctx.i}`);
   return node;
@@ -190,6 +237,7 @@ function applyToStrings(node, fn) {
 
 function makeReplacer(find, replace, { regex = false, flags = "g" } = {}) {
   if (regex) {
+    if (find.length > MAX_REGEX_LENGTH) throw new Error(`regular expression exceeds ${MAX_REGEX_LENGTH} characters`);
     const re = new RegExp(find, flags.includes("g") ? flags : flags + "g");
     return (s) => s.replace(re, replace);
   }
@@ -202,11 +250,14 @@ function makeReplacer(find, replace, { regex = false, flags = "g" } = {}) {
  * (WordPress nests serialized data inside options constantly).
  */
 export function strictReplace(str, find, replace, opts = {}) {
+  if (find === "") return str;
   const tree = parse(str);
   const fn = makeReplacer(find, replace, opts);
+  const nestedDepth = opts.nestedDepth || 0;
   const deepFn = (s) => {
     if (isSerialized(s)) {
-      try { return strictReplace(s, find, replace, opts); } catch { /* fall through */ }
+      if (nestedDepth >= 32) return s;
+      try { return strictReplace(s, find, replace, { ...opts, nestedDepth: nestedDepth + 1 }); } catch { /* fall through */ }
     }
     return fn(s);
   };
@@ -218,54 +269,126 @@ export function strictReplace(str, find, replace, opts = {}) {
 
 /**
  * Repair serialized data whose s: length prefixes are wrong.
- * Strategy: find each s:LEN:"..."; and recompute LEN by locating the
- * real closing '";' , which is the '";' followed by a valid next token
- * (another node, a '}', or end of that structure). This is the standard
- * lenient fix used when data is already corrupted.
+ * It explores possible string boundaries while following the declared array
+ * and object structure. A repair is returned only when exactly one complete,
+ * valid serialized value can be reconstructed. Ambiguous input is unchanged.
  */
 export function repair(str) {
-  let out = "";
-  let i = 0;
-  let fixed = 0;
-  const nextTokenStart = /^(?:[sabidOrRC]:|N;|\})/;
-
-  while (i < str.length) {
-    const m = /s:(\d+):"/.exec(str.slice(i));
-    if (!m || m.index !== 0) {
-      // find next 's:' to copy up to
-      const nextS = str.indexOf('s:', i + 1);
-      if (nextS === -1) { out += str.slice(i); break; }
-      out += str.slice(i, nextS);
-      i = nextS;
-      continue;
-    }
-    const declaredLen = parseInt(m[1], 10);
-    const contentStart = i + m[0].length;
-    // Find the true end: scan candidate '";' positions, pick the first
-    // where what follows is a valid next token or closes cleanly.
-    let end = -1;
-    let searchFrom = contentStart;
-    while (true) {
-      const close = str.indexOf('";', searchFrom);
-      if (close === -1) break;
-      const after = str.slice(close + 2);
-      if (after === "" || nextTokenStart.test(after)) { end = close; break; }
-      searchFrom = close + 1;
-    }
-    if (end === -1) {
-      // fall back to declared length so we do not lose data
-      const guessed = contentStart + declaredLen;
-      out += str.slice(i, guessed + 2);
-      i = guessed + 2;
-      continue;
-    }
-    const content = str.slice(contentStart, end);
-    const realLen = byteLength(content);
-    if (realLen !== declaredLen) fixed++;
-    out += `s:${realLen}:"${content}";`;
-    i = end + 2;
+  if (isSerialized(str)) return { text: str, fixed: 0, ok: true };
+  if (byteLength(str) > MAX_INPUT_BYTES) {
+    return { text: str, fixed: 0, ok: false, error: `value exceeds ${MAX_INPUT_BYTES} bytes` };
   }
-  return { text: out, fixed };
+
+  const budget = { nodes: 0, branches: 0 };
+  const maxStates = 32;
+
+  function nodeAt(pos, depth) {
+    budget.nodes += 1;
+    if (budget.nodes > MAX_NODES || depth > MAX_DEPTH) throw new ParseError("repair limits exceeded");
+    const token = str[pos];
+
+    if (token === "s") {
+      const colon = str.indexOf(":", pos + 2);
+      if (colon === -1) return [];
+      let declared;
+      try { declared = readUnsigned(str, pos + 2, colon, "string length"); } catch { return []; }
+      if (str[colon + 1] !== '"') return [];
+      const contentStart = colon + 2;
+      const states = [];
+      let close = str.indexOf('";', contentStart);
+      while (close !== -1 && budget.branches < 5000) {
+        budget.branches += 1;
+        const content = str.slice(contentStart, close);
+        const actual = byteLength(content);
+        states.push({ end: close + 2, text: `s:${actual}:"${content}";`, fixed: actual === declared ? 0 : 1 });
+        if (states.length >= maxStates) break;
+        close = str.indexOf('";', close + 2);
+      }
+      return states;
+    }
+
+    if (token === "a" || token === "O") {
+      let p = pos + 2;
+      if (token === "O") {
+        const colon = str.indexOf(":", p);
+        if (colon === -1) return [];
+        let length;
+        try { length = readUnsigned(str, p, colon, "class name length"); } catch { return []; }
+        if (str[colon + 1] !== '"') return [];
+        let classPart;
+        try { classPart = readBytes(str, colon + 2, length, "class name"); } catch { return []; }
+        if (str[classPart.end] !== '"' || str[classPart.end + 1] !== ":") return [];
+        p = classPart.end + 2;
+      }
+      const countColon = str.indexOf(":", p);
+      if (countColon === -1) return [];
+      let count;
+      try { count = readUnsigned(str, p, countColon, "item count"); } catch { return []; }
+      if (count > MAX_NODES || str[countColon + 1] !== "{") return [];
+      const bodyStart = countColon + 2;
+      let states = [{ end: bodyStart, text: str.slice(pos, bodyStart), fixed: 0 }];
+      for (let i = 0; i < count * 2; i++) {
+        const next = [];
+        for (const state of states) {
+          for (const child of nodeAt(state.end, depth + 1)) {
+            next.push({ end: child.end, text: state.text + child.text, fixed: state.fixed + child.fixed });
+            if (next.length >= maxStates) break;
+          }
+          if (next.length >= maxStates) break;
+        }
+        states = next;
+        if (!states.length) return [];
+      }
+      return states
+        .filter((state) => str[state.end] === "}")
+        .map((state) => ({ ...state, end: state.end + 1, text: state.text + "}" }));
+    }
+
+    let end = -1;
+    if (token === "N") end = pos + 2;
+    else if (token === "b" || token === "i" || token === "d" || token === "r" || token === "R") {
+      const semi = str.indexOf(";", pos + 2);
+      if (semi !== -1) end = semi + 1;
+    } else if (token === "C") {
+      const c1 = str.indexOf(":", pos + 2);
+      if (c1 !== -1) {
+        try {
+          const nameLength = readUnsigned(str, pos + 2, c1, "custom class name length");
+          const classPart = readBytes(str, c1 + 2, nameLength, "custom class name");
+          if (str[c1 + 1] !== '"' || str[classPart.end] !== '"' || str[classPart.end + 1] !== ":") return [];
+          const c2 = str.indexOf(":", classPart.end + 2);
+          const dataLength = readUnsigned(str, classPart.end + 2, c2, "custom payload length");
+          if (str[c2 + 1] !== "{") return [];
+          const dataPart = readBytes(str, c2 + 2, dataLength, "custom payload");
+          if (str[dataPart.end] === "}") end = dataPart.end + 1;
+        } catch { return []; }
+      }
+    }
+    if (end === -1) return [];
+    const text = str.slice(pos, end);
+    try {
+      parse(text);
+      return [{ end, text, fixed: 0 }];
+    } catch { return []; }
+  }
+
+  let candidates;
+  try {
+    candidates = nodeAt(0, 1).filter((candidate) => candidate.end === str.length && isSerialized(candidate.text));
+  } catch {
+    candidates = [];
+  }
+  const unique = [...new Map(candidates.map((candidate) => [candidate.text, candidate])).values()];
+  if (unique.length === 1) {
+    const { text, fixed } = unique[0];
+    return { text, fixed, ok: true };
+  }
+  return {
+    text: str,
+    fixed: 0,
+    ok: false,
+    error: unique.length ? "repair is ambiguous; input was left unchanged" : "could not repair this value safely"
+  };
 }
 
 /* ----------------------------- high level ----------------------------- */
@@ -292,7 +415,7 @@ export function process(input, { mode = "replace", find = "", replace = "", rege
     const serialized = isSerialized(value.trim());
     if (mode === "repair") {
       const r = repair(value);
-      return { kind: serialized ? "serialized" : "plain", repaired: r.fixed, input: value, output: r.text, ok: true };
+      return { kind: serialized ? "serialized" : "plain", repaired: r.fixed, input: value, output: r.text, ok: r.ok, error: r.error };
     }
 
     if (replaceError) {
@@ -303,7 +426,9 @@ export function process(input, { mode = "replace", find = "", replace = "", rege
 
     if (serialized) {
       try {
-        const output = strictReplace(value.trim(), find, replace, { regex });
+        const trimmed = value.trim();
+        const start = value.indexOf(trimmed);
+        const output = value.slice(0, start) + strictReplace(trimmed, find, replace, { regex }) + value.slice(start + trimmed.length);
         return { kind: "serialized", input: value, output, ok: true };
       } catch (e) {
         return { kind: "serialized", input: value, output: value, ok: false, error: e.message };
@@ -313,5 +438,5 @@ export function process(input, { mode = "replace", find = "", replace = "", rege
     return { kind: "plain", input: value, output: fn(value), ok: true };
   });
 
-  return { multi, results: multi ? results.filter(r => r.kind !== "blank" || false) : results };
+  return { multi, results: multi ? results.filter((result) => result.kind !== "blank") : results };
 }
