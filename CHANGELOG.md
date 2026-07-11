@@ -3,6 +3,12 @@
 All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.3.12] - 2026-07-11
+
+### Added
+
+- A skip to main content link for keyboard and screen reader users. It waits off screen as the page's first focusable element and drops in as a chartreuse key when focused, jumping past the navigation straight to the tool. The slide respects reduced motion preferences.
+
 ## [1.3.11] - 2026-07-11
 
 ### Changed
@@ -350,6 +356,7 @@ First stable release.
 - Dependency-free ES module engine (`docs/serial.js`) with 16 Node tests.
 - Browser UI in the shared suite design, with light and dark themes, a `?demo` deep link, and a paste-and-process button.
 
+[1.3.12]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.12
 [1.3.11]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.11
 [1.3.10]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.10
 [1.3.9]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.9
