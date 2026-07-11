@@ -3,6 +3,12 @@
 All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.3.11] - 2026-07-11
+
+### Changed
+
+- Social sharing metadata carries explicit X and Twitter titles and descriptions, matching the other tools in the suite.
+
 ## [1.3.10] - 2026-07-11
 
 ### Fixed
@@ -344,6 +350,7 @@ First stable release.
 - Dependency-free ES module engine (`docs/serial.js`) with 16 Node tests.
 - Browser UI in the shared suite design, with light and dark themes, a `?demo` deep link, and a paste-and-process button.
 
+[1.3.11]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.11
 [1.3.10]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.10
 [1.3.9]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.9
 [1.3.8]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.8
