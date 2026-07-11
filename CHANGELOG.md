@@ -3,6 +3,12 @@
 All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.3.5] - 2026-07-11
+
+### Added
+
+- The resize corner of text boxes shows a hand-drawn affordance again: two diagonal grip lines in brand green floating on a transparent square, so people can tell the box expands while the rounded corner stays clean. Light mode uses the deeper green for contrast on cream.
+
 ## [1.3.4] - 2026-07-11
 
 ### Fixed
@@ -308,6 +314,7 @@ First stable release.
 - Dependency-free ES module engine (`docs/serial.js`) with 16 Node tests.
 - Browser UI in the shared suite design, with light and dark themes, a `?demo` deep link, and a paste-and-process button.
 
+[1.3.5]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.5
 [1.3.4]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.4
 [1.3.3]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.3
 [1.3.2]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.2
