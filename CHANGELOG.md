@@ -3,6 +3,13 @@
 All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.3.17] - 2026-07-12
+
+### Fixed
+
+- The 404 page now carries the same Built by Jayden Yoon ZK footer as every other page.
+- Short pages no longer show a hard-edged second copy of the page glow near the bottom. The body background propagates to the canvas, which tiles the glow image below a short page; the glow is now painted exactly once.
+
 ## [1.3.16] - 2026-07-12
 
 ### Added
@@ -380,6 +387,7 @@ First stable release.
 - Dependency-free ES module engine (`docs/serial.js`) with 16 Node tests.
 - Browser UI in the shared suite design, with light and dark themes, a `?demo` deep link, and a paste-and-process button.
 
+[1.3.17]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.17
 [1.3.16]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.16
 [1.3.15]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.15
 [1.3.14]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.14
