@@ -3,6 +3,12 @@
 All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.3.1] - 2026-07-11
+
+### Added
+
+- Selected text now wears the brand. Highlighting any text shows the same chartreuse-with-dark-ink pairing the primary buttons use, identical in both themes, replacing the browser's default blue.
+
 ## [1.3.0] - 2026-07-11
 
 ### Added
@@ -284,6 +290,7 @@ First stable release.
 - Dependency-free ES module engine (`docs/serial.js`) with 16 Node tests.
 - Browser UI in the shared suite design, with light and dark themes, a `?demo` deep link, and a paste-and-process button.
 
+[1.3.1]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.1
 [1.3.0]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.0
 [1.2.25]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.2.25
 [1.2.24]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.2.24
