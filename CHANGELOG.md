@@ -3,6 +3,12 @@
 All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.3.4] - 2026-07-11
+
+### Fixed
+
+- Scrollbars inside rounded boxes no longer break the corner. A scrollbar strip is always rectangular, so the glow, the center rail, and the system resize grip read as a square poking through a text box's corner radius. Inner scrollables now show a clean chartreuse pill with no glow or rail and an invisible resizer, while the page scrollbar, whose corners really are square, keeps the full glowing treatment.
+
 ## [1.3.3] - 2026-07-11
 
 ### Changed
@@ -302,6 +308,7 @@ First stable release.
 - Dependency-free ES module engine (`docs/serial.js`) with 16 Node tests.
 - Browser UI in the shared suite design, with light and dark themes, a `?demo` deep link, and a paste-and-process button.
 
+[1.3.4]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.4
 [1.3.3]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.3
 [1.3.2]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.2
 [1.3.1]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.1
