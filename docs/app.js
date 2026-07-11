@@ -1,4 +1,4 @@
-import { process, isSerialized, byteLength, serialize } from "./serial.js?v=20260711x";
+import { process, isSerialized, byteLength, serialize } from "./serial.js?v=1.3.0";
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
@@ -79,9 +79,9 @@ function run() {
 
   const chips = [];
   if (mode === "repair") {
-    chips.push(repaired
-      ? `<span class="chip amber"><strong>${repaired}</strong> length prefix${repaired === 1 ? "" : "es"} repaired</span>`
-      : `<span class="chip ok">Nothing to repair, the data was already valid</span>`);
+    if (failed) chips.push(`<span class="chip red"><strong>${failed}</strong> could not be repaired safely</span>`);
+    if (repaired) chips.push(`<span class="chip amber"><strong>${repaired}</strong> length prefix${repaired === 1 ? "" : "es"} repaired</span>`);
+    if (!failed && !repaired) chips.push(`<span class="chip ok">Nothing to repair, the data was already valid</span>`);
   } else {
     if (changed) chips.push(`<span class="chip green"><strong>${changed}</strong> value${changed === 1 ? "" : "s"} changed</span>`);
     else if (!failed) chips.push(`<span class="chip">No matches for that search term</span>`);

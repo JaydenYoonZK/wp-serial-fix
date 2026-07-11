@@ -1,0 +1,30 @@
+name: Feature request
+description: Suggest a focused improvement to the engine, workflow, or documentation.
+title: "[feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+      description: Describe the WordPress task or serialized value that is difficult today.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What would a useful result look like?
+      description: A small example is welcome.
+    validations:
+      required: true
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Area
+      options:
+        - Parser or repair engine
+        - Browser workflow
+        - Documentation
+        - Testing or compatibility
+    validations:
+      required: true
