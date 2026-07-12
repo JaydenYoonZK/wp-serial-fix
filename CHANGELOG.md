@@ -3,6 +3,12 @@
 All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.3.29] - 2026-07-12
+
+### Added
+
+- A purpose-built 1280x640 social preview card, and the page's link-sharing metadata now points at it with honest dimensions.
+
 ## [1.3.28] - 2026-07-12
 
 ### Fixed
@@ -458,6 +464,7 @@ First stable release.
 - Dependency-free ES module engine (`docs/serial.js`) with 16 Node tests.
 - Browser UI in the shared suite design, with light and dark themes, a `?demo` deep link, and a paste-and-process button.
 
+[1.3.29]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.29
 [1.3.28]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.28
 [1.3.27]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.27
 [1.3.26]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.26
