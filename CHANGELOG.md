@@ -3,6 +3,12 @@
 All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.3.30] - 2026-07-12
+
+### Fixed
+
+- The navigation bar now bleeds its own skin above the viewport, so iOS elastic scrolling, the collapsing Safari chrome, and desktop rubber-banding show navigation instead of a bare transparent strip. Works in both themes.
+
 ## [1.3.29] - 2026-07-12
 
 ### Added
@@ -464,6 +470,7 @@ First stable release.
 - Dependency-free ES module engine (`docs/serial.js`) with 16 Node tests.
 - Browser UI in the shared suite design, with light and dark themes, a `?demo` deep link, and a paste-and-process button.
 
+[1.3.30]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.30
 [1.3.29]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.29
 [1.3.28]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.28
 [1.3.27]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.27
