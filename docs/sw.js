@@ -1,9 +1,10 @@
+/*! WP Serial Fix | Copyright (c) 2026 Jayden Yoon ZK | MIT License | https://github.com/JaydenYoonZK/wp-serial-fix */
 /* Offline support. The shell is precached at install, same-origin requests
    are answered from cache and refreshed in the background, and cross-origin
    requests pass through untouched so live lookups stay live. The cache name
    carries the release version and old caches are dropped on activate. */
 
-const VERSION = "?v=1.3.18";
+const VERSION = "?v=1.3.19";
 const CACHE = "wp-serial-fix-" + VERSION;
 const SHELL = [
   "./",

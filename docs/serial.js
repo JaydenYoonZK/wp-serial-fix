@@ -1,3 +1,4 @@
+/*! WP Serial Fix | Copyright (c) 2026 Jayden Yoon ZK | MIT License | https://github.com/JaydenYoonZK/wp-serial-fix */
 /**
  * wp-serial-fix engine
  *
