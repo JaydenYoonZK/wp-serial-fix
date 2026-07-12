@@ -3,6 +3,12 @@
 All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.3.18] - 2026-07-12
+
+### Fixed
+
+- The 404 page's key and tool cards no longer pick up the prose link underline on hover, focus, or press.
+
 ## [1.3.17] - 2026-07-12
 
 ### Fixed
@@ -387,6 +393,7 @@ First stable release.
 - Dependency-free ES module engine (`docs/serial.js`) with 16 Node tests.
 - Browser UI in the shared suite design, with light and dark themes, a `?demo` deep link, and a paste-and-process button.
 
+[1.3.18]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.18
 [1.3.17]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.17
 [1.3.16]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.16
 [1.3.15]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.15
