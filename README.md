@@ -20,13 +20,13 @@ Change URLs and domains in WordPress serialized data without breaking it, and re
 WordPress stores widget layouts, theme options, and page builder content as PHP serialized strings, where every string carries its exact byte length:
 
 ```
-s:19:"http://old.example";
+s:18:"http://old.example";
 ```
 
 Move the site and run a database-wide find and replace, and the text changes but the number does not:
 
 ```
-s:19:"https://new.longer.example";   ← says 19, is actually 26
+s:18:"https://new.longer.example";   ← says 18, is actually 26
 ```
 
 PHP reads 19 bytes, finds no closing quote, and `unserialize()` returns `false`. WordPress treats the option as empty and your settings silently vanish. No error, just a homepage that forgot its widgets. It is the most common way a WordPress migration goes wrong.

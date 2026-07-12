@@ -8,7 +8,7 @@
  * Pure functions, no DOM. Runs in the browser and under Node's test runner.
  *
  * Why this exists: PHP records the byte length of every string it
- * serializes, e.g. s:19:"http://old.example". A raw SQL find-and-replace
+ * serializes, e.g. s:18:"http://old.example". A raw SQL find-and-replace
  * that changes the text but not the number leaves PHP unable to
  * unserialize the row, so WordPress silently drops the value. The safe
  * way is to parse the structure, replace inside string values, and

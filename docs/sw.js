@@ -4,7 +4,7 @@
    requests pass through untouched so live lookups stay live. The cache name
    carries the release version and old caches are dropped on activate. */
 
-const VERSION = "?v=1.3.27";
+const VERSION = "?v=1.3.28";
 const CACHE = "wp-serial-fix-" + VERSION;
 const SHELL = [
   "./",

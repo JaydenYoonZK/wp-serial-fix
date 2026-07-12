@@ -3,6 +3,12 @@
 All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.3.28] - 2026-07-12
+
+### Fixed
+
+- The explainer's byte counting now practices what it preaches: "http://old.example" is 18 bytes, and the page, README, and engine notes all said 19. Every count in the teaching example is now the true one.
+
 ## [1.3.27] - 2026-07-12
 
 ### Changed
@@ -452,6 +458,7 @@ First stable release.
 - Dependency-free ES module engine (`docs/serial.js`) with 16 Node tests.
 - Browser UI in the shared suite design, with light and dark themes, a `?demo` deep link, and a paste-and-process button.
 
+[1.3.28]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.28
 [1.3.27]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.27
 [1.3.26]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.26
 [1.3.25]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.25
