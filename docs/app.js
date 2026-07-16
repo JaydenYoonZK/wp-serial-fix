@@ -1,5 +1,5 @@
 /*! WP Serial Fix | Copyright (c) 2026 Jayden Yoon ZK | MIT License | https://github.com/JaydenYoonZK/wp-serial-fix */
-import { process, isSerialized, byteLength, serialize } from "./serial.js?v=1.3.32";
+import { process, isSerialized, byteLength, serialize } from "./serial.js?v=1.3.33";
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
@@ -16,7 +16,7 @@ function syncControls() {
   actionBtn.disabled = !hasContent;
   clearBtn.disabled = !hasContent;
 }
-input.addEventListener("input", syncControls);
+input.addEventListener("input", () => { syncControls(); if (!results.hidden) results.hidden = true; });
 const results = $("results");
 const summary = $("summary");
 const blocks = $("blocks");
@@ -27,7 +27,12 @@ function currentMode() {
 }
 
 function syncMode() {
-  replaceFields.style.display = currentMode() === "repair" ? "none" : "flex";
+  const repair = currentMode() === "repair";
+  replaceFields.style.display = repair ? "none" : "flex";
+  const run = document.getElementById("run");
+  if (run) run.setAttribute("data-tip", repair
+    ? "Repair the string lengths so the data unserializes again"
+    : "Find and replace safely, fixing the string lengths");
 }
 
 function highlight(before, after) {
@@ -58,16 +63,17 @@ function run() {
 
     const valid = isSerialized(r.output.trim());
     let badge, tone;
-    if (!r.ok) { badge = "COULD NOT PROCESS"; tone = "phantom"; }
+    if (r.kind === "broken") { badge = "NEEDS REPAIR"; tone = "warn"; }
+    else if (!r.ok) { badge = "COULD NOT PROCESS"; tone = "phantom"; }
     else if (mode === "repair") { badge = r.repaired ? `REPAIRED ${r.repaired}` : "ALREADY VALID"; tone = r.repaired ? "warn" : "ok"; }
     else if (r.kind === "serialized") { badge = valid ? "SERIALIZED, SAFE" : "CHECK"; tone = valid ? "ok" : "warn"; }
     else { badge = "PLAIN TEXT"; tone = "default"; }
 
-    const meta = !r.ok ? esc(r.error || "Could not process this value")
+    const meta = !r.ok ? (r.error || "Could not process this value")
       : r.kind === "serialized" && valid
       ? `valid serialized data, ${byteLength(r.output)} bytes`
       : r.kind === "plain" ? "not serialized, plain replace applied"
-      : r.error ? esc(r.error) : "";
+      : r.error ? r.error : "";
 
     return `<div class="sblock">
       <div class="sblock-head"><span class="verdict ${tone}">${badge}</span><span>${esc(meta)}</span></div>
@@ -85,7 +91,7 @@ function run() {
     if (!failed && !repaired) chips.push(`<span class="chip ok">Nothing to repair, the data was already valid</span>`);
   } else {
     if (changed) chips.push(`<span class="chip green"><strong>${changed}</strong> value${changed === 1 ? "" : "s"} changed</span>`);
-    else if (!failed) chips.push(`<span class="chip">No matches for that search term</span>`);
+    else if (!failed) chips.push(`<span class="chip">${$("find").value ? "No matches for that search term" : "Enter a term above to find and replace"}</span>`);
     if (serialized) chips.push(`<span class="chip"><strong>${serialized}</strong> serialized, lengths recalculated</span>`);
     if (failed) chips.push(`<span class="chip red"><strong>${failed}</strong> could not be processed</span>`);
   }
@@ -94,9 +100,19 @@ function run() {
   for (const btn of blocks.querySelectorAll(".copy-one")) {
     btn.addEventListener("click", async () => {
       const pre = $("out-" + btn.dataset.i);
-      try { await navigator.clipboard.writeText(pre.textContent); } catch { /* ignore */ }
-      const prev = btn.textContent; btn.textContent = "Copied ✓";
-      setTimeout(() => { btn.textContent = prev; }, 1400);
+      const prev = btn.textContent;
+      let copied = false;
+      try { await navigator.clipboard.writeText(pre.textContent); copied = true; } catch { /* fall back below */ }
+      if (!copied) {
+        // Select the text so the user can copy it by hand, and say so honestly.
+        const range = document.createRange();
+        range.selectNodeContents(pre);
+        const sel = getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
+      btn.textContent = copied ? "Copied ✓" : "Press \u2318/Ctrl+C";
+      setTimeout(() => { btn.textContent = prev; }, copied ? 1400 : 2600);
     });
   }
 }
@@ -192,8 +208,18 @@ themeToggle.addEventListener("click", () => {
     const vt = document.startViewTransition(() => {
       const next = document.documentElement.dataset.theme === "light" ? "dark" : "light";
       document.documentElement.dataset.theme = next;
-      localStorage.setItem("theme", next);
+      document.querySelector('meta[name="theme-color"]')?.setAttribute("content", next === "light" ? "#f6f4ee" : "#0d0c0a");
+      try { localStorage.setItem("theme", next); } catch { /* storage may be blocked */ }
       syncThemeIcon();
+
+// SMIL animations are not covered by CSS reduced-motion rules, pause them.
+const svgMotion = matchMedia("(prefers-reduced-motion: reduce)");
+function applyReducedMotion() {
+  if (svgMotion.matches) document.querySelectorAll("svg").forEach((el) => el.pauseAnimations?.());
+  else document.querySelectorAll("svg").forEach((el) => el.unpauseAnimations?.());
+}
+applyReducedMotion();
+svgMotion.addEventListener?.("change", applyReducedMotion);
     });
     vt.finished.finally(() => document.documentElement.classList.remove("vt-active"));
     return;
@@ -203,7 +229,8 @@ themeToggle.addEventListener("click", () => {
   themeFadeTimer = setTimeout(() => document.documentElement.classList.remove("theme-fading"), 500);
   const next = document.documentElement.dataset.theme === "light" ? "dark" : "light";
   document.documentElement.dataset.theme = next;
-  localStorage.setItem("theme", next);
+      document.querySelector('meta[name="theme-color"]')?.setAttribute("content", next === "light" ? "#f6f4ee" : "#0d0c0a");
+  try { localStorage.setItem("theme", next); } catch { /* storage may be blocked */ }
   syncThemeIcon();
 });
 syncThemeIcon();

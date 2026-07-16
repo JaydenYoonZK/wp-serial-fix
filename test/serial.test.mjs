@@ -270,3 +270,51 @@ test("parser depth is bounded", () => {
   assert.throws(() => parse(value), /exceeds 256 levels/);
   assert.equal(isSerialized(value), false);
 });
+
+
+test("PHP 8.1 enum (E: token) parses, round-trips, and replaces safely", () => {
+  const input = 'a:2:{s:4:"suit";E:11:"Suit:Hearts";s:3:"url";s:19:"http://old.test.com";}';
+  assert.equal(isSerialized(input), true);
+  assert.equal(serialize(parse(input)), input);
+  const r = process(input, { find: "old.test.com", replace: "brand-new-longer.example.org" });
+  assert.equal(r.results[0].kind, "serialized");
+  assert.equal(isSerialized(r.results[0].output), true, "enum replace must not corrupt the value");
+  assert.match(r.results[0].output, /s:35:"http:\/\/brand-new-longer.example.org"/);
+  // the enum value itself is preserved verbatim
+  assert.match(r.results[0].output, /E:11:"Suit:Hearts"/);
+});
+
+test("replace mode refuses broken serialized data instead of naively corrupting it", () => {
+  const broken = 'a:1:{s:4:"home";s:18:"https://new-longer.example.org";}'; // s:18 is wrong
+  const r = process(broken, { mode: "replace", find: "new-longer", replace: "z" });
+  assert.equal(r.results[0].kind, "broken");
+  assert.equal(r.results[0].ok, false);
+  assert.equal(r.results[0].output, broken, "must not modify broken data");
+  assert.match(r.results[0].error, /Repair mode/);
+});
+
+test("genuinely plain text is still replaced", () => {
+  const r = process("visit http://old.example today", { find: "old.example", replace: "new.example" });
+  assert.equal(r.results[0].kind, "plain");
+  assert.equal(r.results[0].output, "visit http://new.example today");
+});
+
+test("a single valid value containing a newline is not mis-split", () => {
+  const nlVal = 's:10:"X\ns:3:"abc";';
+  assert.equal(isSerialized(nlVal), true);
+  const r = process(nlVal, { find: "abc", replace: "abcdefghij" });
+  assert.equal(r.multi, false);
+  assert.equal(r.results.length, 1);
+  assert.equal(isSerialized(r.results[0].output), true);
+});
+
+test("repair mode splits an all-broken multi-line column row by row", () => {
+  const col = [
+    'a:1:{s:3:"url";s:18:"https://new-longer.example.org";}',
+    'a:1:{s:3:"url";s:20:"https://new-longer.example.org/a";}'
+  ].join("\n");
+  const r = process(col, { mode: "repair" });
+  assert.equal(r.multi, true);
+  assert.equal(r.results.length, 2);
+  assert.ok(r.results.every(x => x.ok && isSerialized(x.output)), "each row repairs independently");
+});

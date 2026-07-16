@@ -5,7 +5,6 @@ Change URLs and domains in WordPress serialized data without breaking it, and re
 <p>
   <a href="https://jaydenyoonzk.github.io/wp-serial-fix/"><img src="https://img.shields.io/badge/Live%20tool-open-abcf37?style=for-the-badge&logo=githubpages&logoColor=black" alt="Open the live tool"></a>
   <a href="https://github.com/JaydenYoonZK/wp-serial-fix/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/JaydenYoonZK/wp-serial-fix/ci.yml?style=for-the-badge&label=tests" alt="CI status"></a>
-  <a href="https://github.com/JaydenYoonZK/wp-serial-fix"><img src="https://img.shields.io/github/stars/JaydenYoonZK/wp-serial-fix?style=for-the-badge&logo=github" alt="GitHub stars"></a>
   <a href="LICENSE"><img src="https://img.shields.io/github/license/JaydenYoonZK/wp-serial-fix?style=for-the-badge" alt="MIT License"></a>
 </p>
 
@@ -29,7 +28,7 @@ Move the site and run a database-wide find and replace, and the text changes but
 s:18:"https://new.longer.example";   ← says 18, is actually 26
 ```
 
-PHP reads 19 bytes, finds no closing quote, and `unserialize()` returns `false`. WordPress treats the option as empty and your settings silently vanish. No error, just a homepage that forgot its widgets. It is the most common way a WordPress migration goes wrong.
+PHP reads 18 bytes, finds data where it expected a closing quote, and `unserialize()` returns `false`. WordPress treats the option as empty and your settings silently vanish. No error, just a homepage that forgot its widgets. It is the most common way a WordPress migration goes wrong.
 
 ## What this does
 

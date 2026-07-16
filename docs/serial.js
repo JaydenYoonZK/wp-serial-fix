@@ -94,19 +94,21 @@ function parseNode(str, ctx) {
     return { type: kind, raw };
   }
 
-  if (t === "s") {
+  if (t === "s" || t === "E") {
+    // s:N:"...";  a string, and E:N:"Enum:Case";  a PHP 8.1 enum. Both are a
+    // byte-length-prefixed quoted value, so they parse and re-emit the same way.
     const colon = str.indexOf(":", ctx.i + 2);
-    if (colon === -1) throw new ParseError(`bad string header at ${ctx.i}`);
-    const len = readUnsigned(str, ctx.i + 2, colon, "string length");
+    if (colon === -1) throw new ParseError(`bad ${t === "E" ? "enum" : "string"} header at ${ctx.i}`);
+    const len = readUnsigned(str, ctx.i + 2, colon, t === "E" ? "enum length" : "string length");
     if (str[colon + 1] !== '"') throw new ParseError(`expected '"' at ${colon + 1}`);
     const start = colon + 2;
-    const content = readBytes(str, start, len, "string");
+    const content = readBytes(str, start, len, t === "E" ? "enum" : "string");
     const after = content.end;
     if (str[after] !== '"' || str[after + 1] !== ";") {
-      throw new ParseError(`string not closed cleanly at ${ctx.i} (length prefix likely wrong)`);
+      throw new ParseError(`${t === "E" ? "enum" : "string"} not closed cleanly at ${ctx.i} (length prefix likely wrong)`);
     }
     ctx.i = after + 2;
-    return { type: "str", v: content.value };
+    return t === "E" ? { type: "enum", v: content.value } : { type: "str", v: content.value };
   }
 
   if (t === "a" || t === "O") {
@@ -198,10 +200,18 @@ export function parse(str) {
   return node;
 }
 
+// A string that begins with a serialization token, whether or not it fully
+// parses. Used to tell "genuinely plain text" apart from "serialized data with
+// a broken length prefix", so a plain replace never corrupts the latter.
+const SERIAL_SHAPE = /^[NbidsaOrRCE]:/;
+function looksSerialized(str) {
+  return typeof str === "string" && (SERIAL_SHAPE.test(str) || str === "N;");
+}
+
 /** True if the whole string is one well-formed serialized value. */
 export function isSerialized(str) {
   if (typeof str !== "string" || str.length < 2) return false;
-  if (!/^[NbidsaOrRC]:/.test(str) && str !== "N;") return false;
+  if (!looksSerialized(str)) return false;
   try { parse(str); return true; } catch { return false; }
 }
 
@@ -214,6 +224,7 @@ export function serialize(node) {
     case "int": return `i:${node.raw};`;
     case "double": return `d:${node.raw};`;
     case "str": return `s:${byteLength(node.v)}:"${node.v}";`;
+    case "enum": return `E:${byteLength(node.v)}:"${node.v}";`;
     case "ref": return `${node.token}:${node.raw};`;
     case "custom": return `C:${byteLength(node.className)}:"${node.className}":${byteLength(node.data)}:{${node.data}}`;
     case "array":
@@ -401,7 +412,14 @@ export function repair(str) {
  */
 export function process(input, { mode = "replace", find = "", replace = "", regex = false } = {}) {
   const lines = input.split(/\r?\n/);
-  const multi = lines.filter(l => l.trim()).length > 1 && lines.some(l => isSerialized(l.trim()));
+  // A single well-formed value stays whole even if it contains newlines. Only
+  // split when the paste is several values: in replace mode at least one line
+  // must already be valid; in repair mode every line is broken by definition,
+  // so more than one non-blank line is enough to repair them row by row.
+  const nonBlank = lines.filter(l => l.trim());
+  const wholeIsOneValue = isSerialized(input.trim());
+  const multi = !wholeIsOneValue && nonBlank.length > 1 &&
+    (mode === "repair" || lines.some(l => isSerialized(l.trim())));
   const targets = multi ? lines : [input];
   let replaceError = null;
   if (mode !== "repair" && find) {
@@ -434,6 +452,13 @@ export function process(input, { mode = "replace", find = "", replace = "", rege
       } catch (e) {
         return { kind: "serialized", input: value, output: value, ok: false, error: e.message };
       }
+    }
+    // Data that begins with a serialization token but does not parse is broken
+    // serialized data, not plain text. A naive replace would leave a wrong
+    // length prefix and corrupt it further, so refuse and point at repair mode.
+    if (looksSerialized(value.trim())) {
+      return { kind: "broken", input: value, output: value, ok: false,
+        error: "This looks like serialized data with a wrong length prefix. Switch to Repair mode first." };
     }
     const fn = makeReplacer(find, replace, { regex });
     return { kind: "plain", input: value, output: fn(value), ok: true };

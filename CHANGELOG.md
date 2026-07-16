@@ -3,6 +3,31 @@
 All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.3.33] - 2026-07-16
+
+A deep quality pass from an adversarial pre-launch review of the engine, the page, and the docs.
+
+### Fixed
+
+- PHP 8.1 enum values (the `E:` token) are now parsed as serialized data. Before, a serialized array containing an enum was misread as plain text and a length-blind replace corrupted its string prefixes, the exact failure this tool exists to prevent. Enum values round-trip and the surrounding strings recompute their byte lengths correctly.
+- Replace mode no longer performs a naive length-breaking replace on serialized data whose prefix is already wrong. Input that looks serialized but does not parse is flagged "needs repair" and left untouched, instead of being corrupted further.
+- Repair mode now fixes a pasted column of broken values row by row. Previously an all-broken multi-line paste (the normal repair case) was fed to the repairer as one blob and failed wholesale.
+- A single valid serialized value that contains a newline is no longer mis-split into separate values.
+- The 404 page works at any URL depth: its stylesheet, script, icons, and links are project-absolute, so a missing path two or more segments deep is styled and navigable rather than raw HTML.
+- `prefers-reduced-motion` now pauses the page's SVG animations, which CSS rules cannot stop.
+- Theme reading and writing survive blocked browser storage, and the page keeps a dark fallback if the boot script cannot run.
+- The back-to-top button leaves the keyboard tab order while it is hidden.
+- The Copy button confirms only when the clipboard write actually succeeds, and offers a manual-copy fallback otherwise.
+- Error messages are no longer double-escaped, so text with `<` or `&` reads correctly.
+- The "no matches" summary no longer appears when no search term was entered.
+- The README's teaching example counts its own bytes correctly ("PHP reads 18 bytes", not 19).
+
+### Changed
+
+- The Process button's tooltip follows the selected mode (replace vs repair).
+- Editing the source after a run clears the stale results so old output cannot be copied by mistake.
+- A `theme-color` meta follows the active theme; PNG and Apple touch icons were added; the stars badge was dropped from the README.
+
 ## [1.3.32] - 2026-07-15
 
 ### Added
@@ -482,6 +507,7 @@ First stable release.
 - Dependency-free ES module engine (`docs/serial.js`) with 16 Node tests.
 - Browser UI in the shared suite design, with light and dark themes, a `?demo` deep link, and a paste-and-process button.
 
+[1.3.33]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.33
 [1.3.32]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.32
 [1.3.31]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.31
 [1.3.30]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.30
