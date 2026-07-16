@@ -3,6 +3,17 @@
 All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.3.34] - 2026-07-16
+
+Follow-up fixes from an adversarial review of the 1.3.33 changes.
+
+### Fixed
+
+- Repair mode fixes a single broken value that contains a newline as one value again. The 1.3.33 change to repair a pasted column row by row had started splitting such a value on its newline; it now tries the whole value first and only splits when the whole cannot be repaired.
+- Replace mode no longer refuses plain text that merely starts with a token letter and a colon (for example "s: 3 apples" or "N: north"). The serialized-shape check now requires a real serialized continuation, so genuine plain text is replaced while broken serialized data is still caught.
+- The reduced-motion pause for SVG animations now runs on page load on the main page. In 1.3.33 it had been placed inside the theme-toggle handler, so it only fired on a theme switch.
+- The README test count is current again (37 tests).
+
 ## [1.3.33] - 2026-07-16
 
 A deep quality pass from an adversarial pre-launch review of the engine, the page, and the docs.
@@ -507,6 +518,7 @@ First stable release.
 - Dependency-free ES module engine (`docs/serial.js`) with 16 Node tests.
 - Browser UI in the shared suite design, with light and dark themes, a `?demo` deep link, and a paste-and-process button.
 
+[1.3.34]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.34
 [1.3.33]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.33
 [1.3.32]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.32
 [1.3.31]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.31

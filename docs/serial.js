@@ -203,7 +203,7 @@ export function parse(str) {
 // A string that begins with a serialization token, whether or not it fully
 // parses. Used to tell "genuinely plain text" apart from "serialized data with
 // a broken length prefix", so a plain replace never corrupts the latter.
-const SERIAL_SHAPE = /^[NbidsaOrRCE]:/;
+const SERIAL_SHAPE = /^(?:N;|[bidsaOrRCE]:(?:\d|-|I|N))/;
 function looksSerialized(str) {
   return typeof str === "string" && (SERIAL_SHAPE.test(str) || str === "N;");
 }
@@ -418,8 +418,17 @@ export function process(input, { mode = "replace", find = "", replace = "", rege
   // so more than one non-blank line is enough to repair them row by row.
   const nonBlank = lines.filter(l => l.trim());
   const wholeIsOneValue = isSerialized(input.trim());
-  const multi = !wholeIsOneValue && nonBlank.length > 1 &&
-    (mode === "repair" || lines.some(l => isSerialized(l.trim())));
+  let multi;
+  if (wholeIsOneValue) {
+    multi = false; // one valid value stays whole, even with embedded newlines
+  } else if (mode === "repair") {
+    // A single broken value can contain newlines, so try to repair the whole
+    // first; only split into rows when the whole cannot be repaired (a pasted
+    // column of separate broken values).
+    multi = nonBlank.length > 1 && !repair(input.trim()).ok;
+  } else {
+    multi = nonBlank.length > 1 && lines.some(l => isSerialized(l.trim()));
+  }
   const targets = multi ? lines : [input];
   let replaceError = null;
   if (mode !== "repair" && find) {

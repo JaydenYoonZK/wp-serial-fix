@@ -318,3 +318,20 @@ test("repair mode splits an all-broken multi-line column row by row", () => {
   assert.equal(r.results.length, 2);
   assert.ok(r.results.every(x => x.ok && isSerialized(x.output)), "each row repairs independently");
 });
+
+
+test("repair fixes a single broken value that contains a newline as one value", () => {
+  const broken = 'a:1:{s:4:"text";s:11:"LINE-1-LONGER\nline2";}'; // s:11 is wrong
+  assert.equal(isSerialized(broken), false);
+  const r = process(broken, { mode: "repair" });
+  assert.equal(r.multi, false, "a single broken value must not be split on its newline");
+  assert.equal(r.results.length, 1);
+  assert.ok(r.results[0].ok && isSerialized(r.results[0].output));
+});
+
+test("plain text that merely starts with a token letter and colon is still replaced", () => {
+  for (const txt of ["s: 3 apples", "N: north", "i: index", "b: back", "a: list of things"]) {
+    const r = process(txt, { find: "o", replace: "0" }).results[0];
+    assert.equal(r.kind, "plain", `"${txt}" should be treated as plain text`);
+  }
+});

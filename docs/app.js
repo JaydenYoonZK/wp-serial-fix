@@ -1,5 +1,5 @@
 /*! WP Serial Fix | Copyright (c) 2026 Jayden Yoon ZK | MIT License | https://github.com/JaydenYoonZK/wp-serial-fix */
-import { process, isSerialized, byteLength, serialize } from "./serial.js?v=1.3.33";
+import { process, isSerialized, byteLength, serialize } from "./serial.js?v=1.3.34";
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
@@ -211,15 +211,6 @@ themeToggle.addEventListener("click", () => {
       document.querySelector('meta[name="theme-color"]')?.setAttribute("content", next === "light" ? "#f6f4ee" : "#0d0c0a");
       try { localStorage.setItem("theme", next); } catch { /* storage may be blocked */ }
       syncThemeIcon();
-
-// SMIL animations are not covered by CSS reduced-motion rules, pause them.
-const svgMotion = matchMedia("(prefers-reduced-motion: reduce)");
-function applyReducedMotion() {
-  if (svgMotion.matches) document.querySelectorAll("svg").forEach((el) => el.pauseAnimations?.());
-  else document.querySelectorAll("svg").forEach((el) => el.unpauseAnimations?.());
-}
-applyReducedMotion();
-svgMotion.addEventListener?.("change", applyReducedMotion);
     });
     vt.finished.finally(() => document.documentElement.classList.remove("vt-active"));
     return;
@@ -234,6 +225,15 @@ svgMotion.addEventListener?.("change", applyReducedMotion);
   syncThemeIcon();
 });
 syncThemeIcon();
+
+// SMIL animations are not covered by CSS reduced-motion rules, pause them.
+const svgMotion = matchMedia("(prefers-reduced-motion: reduce)");
+function applyReducedMotion() {
+  if (svgMotion.matches) document.querySelectorAll("svg").forEach((el) => el.pauseAnimations?.());
+  else document.querySelectorAll("svg").forEach((el) => el.unpauseAnimations?.());
+}
+applyReducedMotion();
+svgMotion.addEventListener?.("change", applyReducedMotion);
 
 // Scroll spy: the active menu item is the last section whose heading sits
 // at or above the reading line just below the sticky header. Computed from

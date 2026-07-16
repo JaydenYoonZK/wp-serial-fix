@@ -69,7 +69,7 @@ repair('s:19:"https://new-domain.example";').text;   // valid serialized data
 npm test
 ```
 
-32 tests cover round-tripping, exact headers, UTF-8 byte boundaries, nested serialization, references, custom-serialized objects, structure-aware repair, invalid regular expressions, resource limits, and mixed input.
+37 tests cover round-tripping, exact headers, UTF-8 byte boundaries, nested serialization, references, custom-serialized objects, structure-aware repair, invalid regular expressions, resource limits, and mixed input.
 
 The parser accepts values up to 5 MiB, 100,000 nodes, and 256 structural levels. Nested serialized strings are followed to 32 levels. These limits keep accidental or hostile input from tying up the browser. PHP strings are byte streams, while a browser text box contains Unicode text, so opaque non-text binary payloads should be handled with PHP or WP-CLI instead.
 
