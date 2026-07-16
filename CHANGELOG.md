@@ -3,6 +3,12 @@
 All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.3.32] - 2026-07-15
+
+### Added
+
+- A sponsor heart in the navigation, beside the theme toggle: quiet at rest, GitHub sponsor pink on hover, with the toggle's own downward tooltip and arrow, linking to the GitHub Sponsors profile. On the 404 page too.
+
 ## [1.3.31] - 2026-07-12
 
 ### Fixed
@@ -476,6 +482,7 @@ First stable release.
 - Dependency-free ES module engine (`docs/serial.js`) with 16 Node tests.
 - Browser UI in the shared suite design, with light and dark themes, a `?demo` deep link, and a paste-and-process button.
 
+[1.3.32]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.32
 [1.3.31]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.31
 [1.3.30]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.30
 [1.3.29]: https://github.com/JaydenYoonZK/wp-serial-fix/releases/tag/v1.3.29
