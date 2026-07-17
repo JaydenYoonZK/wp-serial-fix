@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [1.3.34] - 2026-07-16
 
-Follow-up fixes from an adversarial review of the 1.3.33 changes.
+Fixes for regressions introduced in 1.3.33.
 
 ### Fixed
 
@@ -16,7 +16,7 @@ Follow-up fixes from an adversarial review of the 1.3.33 changes.
 
 ## [1.3.33] - 2026-07-16
 
-A deep quality pass from an adversarial pre-launch review of the engine, the page, and the docs.
+Data-safety fixes in the engine, plus page and documentation corrections.
 
 ### Fixed
 
@@ -445,10 +445,6 @@ A deep quality pass from an adversarial pre-launch review of the engine, the pag
 
 - Accessibility: the paste box now has a real label instead of one hidden with `display:none`.
 - 19 tests, up from 18.
-
-### Notes
-
-This release followed a full audit of the serialization engine with adversarial inputs. No other defect was found: byte-accurate lengths for multibyte and emoji, NUL-delimited private and protected object keys, references, custom-serialized objects, nested serialized-inside-serialized values, and the strict parser trusting the length prefix through quote-semicolon content all behave correctly, and repair stays linear on large input.
 
 ## [1.1.6] - 2026-07-09
 
