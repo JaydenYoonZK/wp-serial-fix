@@ -483,13 +483,13 @@ Data-safety fixes in the engine, plus page and documentation corrections.
 
 - Invalid regex input now returns a controlled per-value error instead of throwing and breaking the browser interaction on plain text.
 - The README stars badge now links to the repository page instead of the zero-star `/stargazers` page that GitHub returns as 404.
-- The browser tool cache-busts its serialization engine import so Pages serves the current audited code.
+- The browser tool cache-busts its serialization engine import so Pages serves the current release.
 
 ## [1.2.0] - 2026-07-09
 
 ### Added
 
-- A Content Security Policy on the browser tool. Everything runs locally and the page makes no network request, so the policy sets `connect-src 'none'`, which means the browser itself refuses to send your pasted database values anywhere. Verified in a browser: the tool works and an outbound request is blocked.
+- A Content Security Policy on the browser tool. Everything runs locally and the page makes no network request, so the policy sets `connect-src 'none'`, which means the browser itself refuses to send your pasted database values anywhere.
 
 ### Fixed
 
