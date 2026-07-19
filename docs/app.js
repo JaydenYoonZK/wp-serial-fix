@@ -1,5 +1,5 @@
 /*! WP Serial Fix | Copyright (c) 2026 Jayden Yoon ZK | MIT License | https://github.com/JaydenYoonZK/wp-serial-fix */
-import { process, isSerialized, byteLength, serialize } from "./serial.js?v=1.3.37";
+import { process, isSerialized, byteLength, serialize } from "./serial.js?v=1.3.38";
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
@@ -76,9 +76,8 @@ function run() {
       : r.error ? r.error : "";
 
     return `<div class="sblock">
-      <div class="sblock-head"><span class="verdict ${tone}">${badge}</span><span>${esc(meta)}</span></div>
+      <div class="sblock-head"><span class="verdict ${tone}">${badge}</span><span>${esc(meta)}</span><button class="copy-one primary" type="button" data-i="${idx}">Copy</button></div>
       <div class="sblock-body">
-        <button class="copy-one primary" type="button" data-i="${idx}">Copy</button>
         <pre id="out-${idx}">${highlight(r.input, r.output)}</pre>
       </div>
     </div>`;

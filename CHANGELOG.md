@@ -3,6 +3,12 @@
 All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.3.38] - 2026-07-19
+
+### Changed
+
+- Each result Copy button now sits on the badge row, out of the way, instead of floating over the serialized data.
+
 ## [1.3.37] - 2026-07-19
 
 ### Changed

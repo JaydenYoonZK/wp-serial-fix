@@ -1205,7 +1205,7 @@ html[data-theme="light"] .sph .inner {
 .sblock-head { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: var(--panel); font-size: 0.85rem; font-weight: 600; color: var(--ink-soft); border-bottom: 1px solid var(--line); }
 .sblock-body { position: relative; }
 .sblock-body pre { margin: 0; padding: 16px; font-family: var(--mono); font-size: 0.85rem; line-height: 1.6; overflow-x: auto; white-space: pre-wrap; word-break: break-all; color: var(--ink); }
-.sblock-body .copy-one { position: absolute; top: 10px; right: 10px; font-size: 0.8rem; padding: 6px 12px; }
+.sblock-head .copy-one { margin-left: auto; font-size: 0.8rem; padding: 6px 12px; }
 .mark { color: var(--accent); font-weight: 700; }
 .mark-old { color: var(--red); text-decoration: line-through; opacity: 0.7; }
 
