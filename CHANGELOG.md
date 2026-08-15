@@ -3,6 +3,12 @@
 All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.4.8] - 2026-08-16
+
+### Fixed
+
+- On iPhone the strip under the clock and battery could flash page content mid-scroll. The shield covering that zone hung off the blurred bar itself, and iOS never drew it there; it now sits just outside the bar, where the blur cannot clip it.
+
 ## [1.4.7] - 2026-08-15
 
 ### Changed
