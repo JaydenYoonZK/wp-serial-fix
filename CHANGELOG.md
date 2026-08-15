@@ -3,6 +3,12 @@
 All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.4.11] - 2026-08-16
+
+### Fixed
+
+- The film grain overlay was pinned to the viewport, and a full-bleed fixed layer makes iOS Safari composite scrolled page content into the status bar strip, so text ghosted around the clock and the WiFi icons. The grain now sits on the document itself and scrolls with it, which keeps that strip clean. On the page it looks exactly as before.
+
 ## [1.4.10] - 2026-08-16
 
 ### Fixed
