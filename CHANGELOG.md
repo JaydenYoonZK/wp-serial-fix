@@ -3,6 +3,12 @@
 All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.4.9] - 2026-08-16
+
+### Fixed
+
+- The shield above the nav rides fixed now instead of sticky. Under a fast scroll Safari can lag a sticky element's repositioning by a frame, flashing content at the top edge; a fixed element is pinned to the viewport by the compositor and cannot lag.
+
 ## [1.4.8] - 2026-08-16
 
 ### Fixed
